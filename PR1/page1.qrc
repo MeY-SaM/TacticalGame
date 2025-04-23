@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/new/prefix1">
+        <file>discord.png</file>
+        <file>setting.png</file>
+        <file>dragon1.jpg</file>
+    </qresource>
+    <qresource prefix="/new/prefix2"/>
+</RCC>

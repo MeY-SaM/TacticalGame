@@ -1,0 +1,14 @@
+release/main.o
+release/page.o
+release/page1.o
+release/pagegallery.o
+release/pagename.o
+release/qrc_Boards.o
+release/qrc_page.o
+release/qrc_page1.o
+release/qrc_pageGallery.o
+release/qrc_pageName.o
+release/moc_page.o
+release/moc_page1.o
+release/moc_pagegallery.o
+release/moc_pagename.o
