@@ -9,7 +9,12 @@ CONFIG += c++17
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+<<<<<<< Updated upstream
     hexagon.cpp \
+=======
+    boardpage.cpp \
+    bp.cpp \
+>>>>>>> Stashed changes
     main.cpp \
     page.cpp \
     page1.cpp \
@@ -17,13 +22,19 @@ SOURCES += \
     pagename.cpp
 
 HEADERS += \
+<<<<<<< Updated upstream
     hexagon.h \
+=======
+    boardpage.h \
+    bp.h \
+>>>>>>> Stashed changes
     page.h \
     page1.h \
     pagegallery.h \
     pagename.h
 
 FORMS += \
+    boardpage.ui \
     page.ui \
     page1.ui \
     pagegallery.ui \
@@ -36,10 +47,12 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 RESOURCES += \
     Boards.qrc \
+    bp.qrc \
     page.qrc \
     page1.qrc \
     pageGallery.qrc \
     pageName.qrc \
+    bp.qrc \
     pageName.qrc
 
 DISTFILES +=

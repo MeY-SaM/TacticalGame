@@ -15,6 +15,11 @@
 #include <QCursor>
 #include <QPointF>
 #include <cmath>
+<<<<<<< Updated upstream
+=======
+
+// ناحیه مجاز رهاسازی برای برد اصلی
+>>>>>>> Stashed changes
 const int BOARD_LEFT = 100;
 const int BOARD_RIGHT = 700;
 
@@ -24,8 +29,13 @@ public:
         : QGraphicsPolygonItem(polygon, parent) {
         setFlags(ItemIsMovable | ItemIsSelectable);
         setCursor(Qt::OpenHandCursor);
+<<<<<<< Updated upstream
         setZValue(10);
         originalPos = pos();
+=======
+        setZValue(10); // جلوتر از آیتم‌های دیگر باشد
+        originalPos = pos(); // ذخیره موقعیت اولیه
+>>>>>>> Stashed changes
     }
 
     void setSnapGrid(qreal cellWidth, qreal cellHeight, qreal boardStartX) {
@@ -39,11 +49,19 @@ protected:
         if (change == ItemPositionChange && scene()) {
             QPointF newPos = value.toPointF();
             if (newPos.x() < BOARD_LEFT || newPos.x() > BOARD_RIGHT) {
+<<<<<<< Updated upstream
                 return pos();
             }
             return newPos;
         } else if (change == ItemPositionHasChanged) {
             snapToGrid();
+=======
+                return pos(); // جلوگیری از خروج از محدوده برد
+            }
+            return newPos; // اجازه جابجایی
+        } else if (change == ItemPositionHasChanged) {
+            snapToGrid(); // چفت شدن به شبکه بعد از جابجایی
+>>>>>>> Stashed changes
         }
         return QGraphicsItem::itemChange(change, value);
     }
@@ -52,6 +70,10 @@ private:
     void snapToGrid() {
         qreal x = pos().x();
         qreal y = pos().y();
+<<<<<<< Updated upstream
+=======
+        // محاسبه نزدیک‌ترین مختصات شبکه شش‌ضلعی
+>>>>>>> Stashed changes
         qreal col = floor((x - boardStartX) / cellWidth + 0.5);
         qreal row = floor(y / cellHeight + 0.5);
         qreal newX = boardStartX + col * cellWidth;
@@ -66,10 +88,15 @@ private:
 };
 
 bp::bp(QWidget *parent) : QWidget(parent) {
+<<<<<<< Updated upstream
+=======
+    // تنظیم scene و view
+>>>>>>> Stashed changes
     scene = new QGraphicsScene(this);
     view = new QGraphicsView(scene, this);
     view->setRenderHint(QPainter::Antialiasing);
 
+<<<<<<< Updated upstream
     view->setFixedSize(800, 300);
     scene->setSceneRect(0, 0, 800, 300);
 
@@ -78,6 +105,20 @@ bp::bp(QWidget *parent) : QWidget(parent) {
     scene->addRect(700, 0, 100, 300, QPen(Qt::NoPen), QBrush(Qt::gray));
 
     int randomIndex = QRandomGenerator::global()->bounded(1, 9);
+=======
+    // تنظیم اندازه‌ها دقیقاً مثل کد اصلی
+    view->setFixedSize(800, 300);
+    scene->setSceneRect(0, 0, 800, 300);
+
+    // تنظیم اندازه پنجره bp
+    setFixedSize(800, 300);
+
+    // نوارهای خاکستری چپ و راست
+    scene->addRect(0, 0, 100, 300, QPen(Qt::NoPen), QBrush(Qt::gray));
+    scene->addRect(700, 0, 100, 300, QPen(Qt::NoPen), QBrush(Qt::gray));
+
+    int randomIndex = QRandomGenerator::global()->bounded(1, 9); // عددی بین 1 تا 8
+>>>>>>> Stashed changes
     QString filePath = QString(":/new/prefix1/grid%1.txt").arg(randomIndex);
 
     QFile file(filePath);

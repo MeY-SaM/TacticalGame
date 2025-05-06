@@ -1,14 +1,28 @@
+<<<<<<< Updated upstream
 release/hexagon.o
+=======
+release/boardpage.o
+release/bp.o
+>>>>>>> Stashed changes
 release/main.o
 release/page.o
 release/page1.o
 release/pagegallery.o
 release/pagename.o
 release/qrc_Boards.o
+<<<<<<< Updated upstream
+=======
+release/qrc_bp.o
+>>>>>>> Stashed changes
 release/qrc_page.o
 release/qrc_page1.o
 release/qrc_pageGallery.o
 release/qrc_pageName.o
+<<<<<<< Updated upstream
+=======
+release/moc_boardpage.o
+release/moc_bp.o
+>>>>>>> Stashed changes
 release/moc_page.o
 release/moc_page1.o
 release/moc_pagegallery.o

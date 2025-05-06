@@ -1,5 +1,6 @@
 #include "pagename.h"
 #include "ui_pagename.h"
+#include "bp.h"
 
 #include "QMessageBox"
 
@@ -34,8 +35,6 @@ pageName::pageName(QWidget *parent)
     ui->lineEdit_2->setStyleSheet("QLineEdit { background: transparent; border: none; color: rgb(245, 200, 110); }");
     ui->lineEdit_2->setAlignment(Qt::AlignCenter);
     ui->lineEdit_2->setPlaceholderText("Enter your Name");
-
-
 }
 
 pageName::~pageName()
@@ -47,13 +46,15 @@ void pageName::on_pushButton_clicked()
 {    QString a,b;
     a= ui->lineEdit->text();
     b= ui->lineEdit_2->text();
-    if(a =="" && b=="")
+    if(a =="" || b=="")
     {
-        QMessageBox::warning(this,"Pay attention","Enter your name first");
+        QMessageBox::warning(this,"Pay attention","Enter your name first!!");
     }
     else
     {
-
+        bp *w= new bp;
+        w->show();
+        this->hide();
     }
 }
 

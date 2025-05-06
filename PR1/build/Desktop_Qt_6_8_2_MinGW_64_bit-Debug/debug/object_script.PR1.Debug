@@ -1,14 +1,28 @@
+<<<<<<< Updated upstream
 debug/hexagon.o
+=======
+debug/boardpage.o
+debug/bp.o
+>>>>>>> Stashed changes
 debug/main.o
 debug/page.o
 debug/page1.o
 debug/pagegallery.o
 debug/pagename.o
 debug/qrc_Boards.o
+<<<<<<< Updated upstream
+=======
+debug/qrc_bp.o
+>>>>>>> Stashed changes
 debug/qrc_page.o
 debug/qrc_page1.o
 debug/qrc_pageGallery.o
 debug/qrc_pageName.o
+<<<<<<< Updated upstream
+=======
+debug/moc_boardpage.o
+debug/moc_bp.o
+>>>>>>> Stashed changes
 debug/moc_page.o
 debug/moc_page1.o
 debug/moc_pagegallery.o

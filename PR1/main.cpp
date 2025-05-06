@@ -48,9 +48,10 @@ void parseFile(const std::string& filename, Hexagon* hexagons[], size_t count) {
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    //Page w;
+    Page w;
     //w.show();
     //pageName w;
+<<<<<<< Updated upstream
     // w.show();
     Hexagon o1;
     Hexagon o2;
@@ -338,5 +339,8 @@ int main(int argc, char *argv[])
 
     parseFile("grid1.txt", hexagons, 41);
 
+=======
+    w.show();
+>>>>>>> Stashed changes
     return a.exec();
 }
