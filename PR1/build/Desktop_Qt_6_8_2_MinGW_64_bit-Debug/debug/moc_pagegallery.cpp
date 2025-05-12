@@ -6,7 +6,7 @@
 ** WARNING! All changes made in this file will be lost!
 *****************************************************************************/
 
-#include "../../../pagegallery.h"
+#include "../../../../../new_Project/TacticalGame/PR1/pagegallery.h"
 #include <QtCore/qmetatype.h>
 
 #include <QtCore/qtmochelpers.h>
