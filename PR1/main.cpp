@@ -1,17 +1,17 @@
-//#include "page.h"
-#include "pagename.h"
+#include "page.h"
+//#include "pagename.h"
 #include <QApplication>
 #include <QMainWindow>
 #include <QPainter>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
-#include <fstream>
-#include <vector>
-#include <iostream>
-#include <cmath>
-#include "hexagon.h"
+//#include <fstream>
+//#include <vector>
+//#include <iostream>
+//#include <cmath>
+//#include "hexagon.h"
 
-void parseFile(const std::string& filename, Hexagon* hexagons[], size_t count) {
+/*void parseFile(const std::string& filename, Hexagon* hexagons[], size_t count) {
     std::ifstream file(filename);
     if (!file.is_open()) {
         std::cerr << "Error opening file: " << filename << std::endl;
@@ -43,17 +43,16 @@ void parseFile(const std::string& filename, Hexagon* hexagons[], size_t count) {
     for (size_t i = 0; i < count; ++i) {
         std::cout << "Hexagon " << i + 1 << ": " << hexagons[i]->value << std::endl;
     }
-}
+}*/
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
     Page w;
-    //w.show();
+    w.show();
     //pageName w;
-<<<<<<< Updated upstream
     // w.show();
-    Hexagon o1;
+    /*Hexagon o1;
     Hexagon o2;
     Hexagon o3;
     Hexagon o4;
@@ -337,10 +336,7 @@ int main(int argc, char *argv[])
     };
 
 
-    parseFile("grid1.txt", hexagons, 41);
+    parseFile("grid1.txt", hexagons, 41);*/
 
-=======
-    w.show();
->>>>>>> Stashed changes
     return a.exec();
 }
