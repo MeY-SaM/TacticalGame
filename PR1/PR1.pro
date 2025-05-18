@@ -40,6 +40,7 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 RESOURCES += \
+    agent.qrc \
     bp.qrc \
     page.qrc \
     page1.qrc \

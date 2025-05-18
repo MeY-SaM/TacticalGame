@@ -1,0 +1,34 @@
+<RCC>
+    <qresource prefix="/Water Walking">
+        <file>angus.jpeg</file>
+        <file>billy.jpeg</file>
+        <file>bunka.jpeg</file>
+        <file>colonelbaba.png</file>
+        <file>duraham.jpeg</file>
+        <file>medusa.jpeg</file>
+        <file>reketon.jpeg</file>
+        <file>sanka.jpeg</file>
+    </qresource>
+    <qresource prefix="/Grounded">
+        <file>boi.jpeg</file>
+        <file>eloi.jpeg</file>
+        <file>elsa.jpeg</file>
+        <file>frost.jpeg</file>
+        <file>kabu.jpeg</file>
+        <file>kanar.jpeg</file>
+        <file>karissa.png</file>
+        <file>khan.jpeg</file>
+        <file>rajakal.jpeg</file>
+        <file>salih.jpeg</file>
+        <file>sirlamorak.jpeg</file>
+        <file>sirphilip.png</file>
+        <file>tusk.jpeg</file>
+    </qresource>
+    <qresource prefix="/Flying">
+        <file>rambo.jpeg</file>
+    </qresource>
+    <qresource prefix="/Floating">
+        <file>death.jpeg</file>
+        <file>sabrina.jpeg</file>
+    </qresource>
+</RCC>
