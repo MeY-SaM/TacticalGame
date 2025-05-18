@@ -423,7 +423,6 @@ Makefile: ../../PR1.pro H:/Qt/6.8.2/llvm-mingw_64/mkspecs/win32-clang-g++/qmake.
 		H:/Qt/6.8.2/llvm-mingw_64/lib/Qt6Core.prl \
 		H:/Qt/6.8.2/llvm-mingw_64/lib/Qt6EntryPoint.prl \
 		H:/Qt/6.8.2/llvm-mingw_64/mkspecs/features/build_pass.prf \
-		../../Boards.qrc \
 		../../bp.qrc \
 		../../page.qrc \
 		../../page1.qrc \
@@ -783,7 +782,6 @@ H:/Qt/6.8.2/llvm-mingw_64/lib/Qt6Gui.prl:
 H:/Qt/6.8.2/llvm-mingw_64/lib/Qt6Core.prl:
 H:/Qt/6.8.2/llvm-mingw_64/lib/Qt6EntryPoint.prl:
 H:/Qt/6.8.2/llvm-mingw_64/mkspecs/features/build_pass.prf:
-../../Boards.qrc:
 ../../bp.qrc:
 ../../page.qrc:
 ../../page1.qrc:

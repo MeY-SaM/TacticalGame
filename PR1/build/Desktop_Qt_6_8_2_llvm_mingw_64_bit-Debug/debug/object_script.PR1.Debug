@@ -6,7 +6,6 @@ debug/page1.o
 debug/pagegallery.o
 debug/pagegallery1.o
 debug/pagename.o
-debug/qrc_Boards.o
 debug/qrc_bp.o
 debug/qrc_page.o
 debug/qrc_page1.o

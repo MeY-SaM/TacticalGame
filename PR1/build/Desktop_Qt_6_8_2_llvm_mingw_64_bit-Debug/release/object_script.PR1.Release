@@ -6,7 +6,6 @@ release/page1.o
 release/pagegallery.o
 release/pagegallery1.o
 release/pagename.o
-release/qrc_Boards.o
 release/qrc_bp.o
 release/qrc_page.o
 release/qrc_page1.o
