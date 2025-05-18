@@ -17,19 +17,19 @@
    <string notr="true"/>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QPushButton" name="pushButtonGallery">
+   <widget class="QPushButton" name="pushButtonGallery1">
     <property name="geometry">
      <rect>
       <x>780</x>
       <y>160</y>
-      <width>161</width>
+      <width>181</width>
       <height>61</height>
      </rect>
     </property>
     <property name="font">
      <font>
       <family>Segoe Print</family>
-      <pointsize>22</pointsize>
+      <pointsize>20</pointsize>
       <bold>true</bold>
      </font>
     </property>
@@ -46,7 +46,7 @@
      <bool>true</bool>
     </property>
     <property name="text">
-     <string>Gallery</string>
+     <string>Gallery 1</string>
     </property>
    </widget>
    <widget class="QPushButton" name="pushButtonStart">
@@ -116,6 +116,26 @@
     </property>
     <property name="text">
      <string>Setting</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButtonGallery2">
+    <property name="geometry">
+     <rect>
+      <x>780</x>
+      <y>220</y>
+      <width>181</width>
+      <height>61</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Segoe Print</family>
+      <pointsize>20</pointsize>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>Gallery 2</string>
     </property>
    </widget>
   </widget>

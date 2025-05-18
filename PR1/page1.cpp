@@ -3,6 +3,8 @@
 #include <QIcon>
 #include "pagegallery.h"
 #include "pagename.h"
+#include "pagegallery1.h"
+
 
 page1::page1(QWidget *parent)
     : QMainWindow(parent)
@@ -16,11 +18,21 @@ page1::page1(QWidget *parent)
     setStyleSheet("QMainWindow { background-image:url(:/new/prefix1/dragon1.jpg) ; }");
 
 
-    ui->pushButtonGallery-> setStyleSheet(
+    ui->pushButtonGallery1-> setStyleSheet(
         "QPushButton {"
         "    background-color: transparent;"
         "    border: none;"
         "    color: rgb(245, 200, 110);"
+        "}"
+        "QPushButton:hover {"
+        "    color:white;"
+        "}"
+        );
+    ui->pushButtonGallery2->setStyleSheet(
+        "QPushButton {"
+        "    background-color: transparent;"
+        "    border: none;"
+        "    color:rgb(245, 200, 110);"
         "}"
         "QPushButton:hover {"
         "    color:white;"
@@ -55,12 +67,6 @@ page1::page1(QWidget *parent)
                                      "}");
 
 
-
-
-
-
-
-
 }
 
 page1::~page1()
@@ -68,13 +74,13 @@ page1::~page1()
     delete ui;
 }
 
-void page1::on_pushButtonGallery_clicked()
+void page1::on_pushButtonGallery1_clicked()
 {
     pageGallery *w1 = new pageGallery;
     w1->show();
     this->hide();
-}
 
+}
 
 void page1::on_pushButtonStart_clicked()
 {
@@ -82,4 +88,15 @@ void page1::on_pushButtonStart_clicked()
     w1->show();
     this->hide();
 }
+
+
+void page1::on_pushButtonGallery2_clicked()
+{
+    pageGallery1 *w1 = new pageGallery1;
+    w1->show();
+    this->hide();
+}
+
+
+
 

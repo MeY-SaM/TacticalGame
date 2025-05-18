@@ -27,6 +27,7 @@ public:
     QPushButton *pushButton;
     QLineEdit *lineEdit;
     QLineEdit *lineEdit_2;
+    QPushButton *pushButton_2;
     QMenuBar *menubar;
     QStatusBar *statusbar;
 
@@ -58,6 +59,14 @@ public:
         lineEdit_2->setObjectName("lineEdit_2");
         lineEdit_2->setGeometry(QRect(687, 270, 261, 131));
         lineEdit_2->setFont(font1);
+        pushButton_2 = new QPushButton(centralwidget);
+        pushButton_2->setObjectName("pushButton_2");
+        pushButton_2->setGeometry(QRect(0, 10, 111, 61));
+        QFont font2;
+        font2.setFamilies({QString::fromUtf8("Segoe Print")});
+        font2.setPointSize(20);
+        font2.setBold(true);
+        pushButton_2->setFont(font2);
         pageName->setCentralWidget(centralwidget);
         menubar = new QMenuBar(pageName);
         menubar->setObjectName("menubar");
@@ -76,6 +85,7 @@ public:
     {
         pageName->setWindowTitle(QCoreApplication::translate("pageName", "MainWindow", nullptr));
         pushButton->setText(QCoreApplication::translate("pageName", "Start game", nullptr));
+        pushButton_2->setText(QCoreApplication::translate("pageName", "Back", nullptr));
     } // retranslateUi
 
 };

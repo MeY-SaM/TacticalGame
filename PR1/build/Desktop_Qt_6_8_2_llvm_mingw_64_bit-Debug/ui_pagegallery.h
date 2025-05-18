@@ -37,7 +37,12 @@ public:
         centralwidget->setObjectName("centralwidget");
         pushButton = new QPushButton(centralwidget);
         pushButton->setObjectName("pushButton");
-        pushButton->setGeometry(QRect(20, 20, 93, 29));
+        pushButton->setGeometry(QRect(0, 10, 101, 41));
+        QFont font;
+        font.setFamilies({QString::fromUtf8("Segoe Print")});
+        font.setPointSize(18);
+        font.setBold(true);
+        pushButton->setFont(font);
         pageGallery->setCentralWidget(centralwidget);
         menubar = new QMenuBar(pageGallery);
         menubar->setObjectName("menubar");

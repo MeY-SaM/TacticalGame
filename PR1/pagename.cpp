@@ -1,6 +1,8 @@
 #include "pagename.h"
 #include "ui_pagename.h"
 #include "bp.h"
+#include "page1.h"
+
 
 #include "QMessageBox"
 
@@ -35,6 +37,19 @@ pageName::pageName(QWidget *parent)
     ui->lineEdit_2->setStyleSheet("QLineEdit { background: transparent; border: none; color: rgb(245, 200, 110); }");
     ui->lineEdit_2->setAlignment(Qt::AlignCenter);
     ui->lineEdit_2->setPlaceholderText("Enter your Name");
+
+
+
+    ui->pushButton_2->setStyleSheet(
+        "QPushButton {"
+        "    background-color: transparent;"
+        "    border: none;"
+        "    color:rgb(245, 200, 110);"
+        "}"
+        "QPushButton:hover {"
+        "    color:white;"
+        "}"
+        );
 }
 
 pageName::~pageName()
@@ -58,4 +73,12 @@ void pageName::on_pushButton_clicked()
     }
 }
 
+
+
+void pageName::on_pushButton_2_clicked()
+{
+    page1 *w=new page1;
+    w->show();
+    this->hide();
+}
 

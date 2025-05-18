@@ -13,6 +13,17 @@ pageGallery::pageGallery(QWidget *parent)
     setWindowTitle("Gallery");
     setFixedSize(1184,672);
     setStyleSheet("QMainWindow { background-image: url(:/new/prefix1/pageGallery.jpg) ; }");
+
+    ui->pushButton->setStyleSheet(
+        "QPushButton {"
+        "    background-color: transparent;"
+        "    border: none;"
+        "    color:rgb(245, 200, 110);"
+        "}"
+        "QPushButton:hover {"
+        "    color:white;"
+        "}"
+        );
 }
 
 pageGallery::~pageGallery()

@@ -16,9 +16,13 @@ public:
     ~page1();
 
 private slots:
-    void on_pushButtonGallery_clicked();
+    void on_pushButtonGallery1_clicked();
 
     void on_pushButtonStart_clicked();
+
+    void on_pushButtonGallery2_clicked();
+
+
 
 private:
     Ui::page1 *ui;

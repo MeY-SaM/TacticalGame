@@ -23,10 +23,11 @@ class Ui_page1
 {
 public:
     QWidget *centralwidget;
-    QPushButton *pushButtonGallery;
+    QPushButton *pushButtonGallery1;
     QPushButton *pushButtonStart;
     QPushButton *pushButtonDis;
     QPushButton *pushButtonSet;
+    QPushButton *pushButtonGallery2;
     QMenuBar *menubar;
     QStatusBar *statusBar;
 
@@ -38,17 +39,17 @@ public:
         page1->setStyleSheet(QString::fromUtf8(""));
         centralwidget = new QWidget(page1);
         centralwidget->setObjectName("centralwidget");
-        pushButtonGallery = new QPushButton(centralwidget);
-        pushButtonGallery->setObjectName("pushButtonGallery");
-        pushButtonGallery->setGeometry(QRect(780, 160, 161, 61));
+        pushButtonGallery1 = new QPushButton(centralwidget);
+        pushButtonGallery1->setObjectName("pushButtonGallery1");
+        pushButtonGallery1->setGeometry(QRect(780, 160, 181, 61));
         QFont font;
         font.setFamilies({QString::fromUtf8("Segoe Print")});
-        font.setPointSize(22);
+        font.setPointSize(20);
         font.setBold(true);
-        pushButtonGallery->setFont(font);
-        pushButtonGallery->setFocusPolicy(Qt::FocusPolicy::NoFocus);
-        pushButtonGallery->setToolTipDuration(-1);
-        pushButtonGallery->setAutoFillBackground(true);
+        pushButtonGallery1->setFont(font);
+        pushButtonGallery1->setFocusPolicy(Qt::FocusPolicy::NoFocus);
+        pushButtonGallery1->setToolTipDuration(-1);
+        pushButtonGallery1->setAutoFillBackground(true);
         pushButtonStart = new QPushButton(centralwidget);
         pushButtonStart->setObjectName("pushButtonStart");
         pushButtonStart->setGeometry(QRect(60, 160, 441, 61));
@@ -73,6 +74,10 @@ public:
         font3.setPointSize(12);
         font3.setBold(true);
         pushButtonSet->setFont(font3);
+        pushButtonGallery2 = new QPushButton(centralwidget);
+        pushButtonGallery2->setObjectName("pushButtonGallery2");
+        pushButtonGallery2->setGeometry(QRect(780, 220, 181, 61));
+        pushButtonGallery2->setFont(font);
         page1->setCentralWidget(centralwidget);
         menubar = new QMenuBar(page1);
         menubar->setObjectName("menubar");
@@ -91,9 +96,9 @@ public:
     {
         page1->setWindowTitle(QCoreApplication::translate("page1", "MainWindow", nullptr));
 #if QT_CONFIG(tooltip)
-        pushButtonGallery->setToolTip(QCoreApplication::translate("page1", "Click!", nullptr));
+        pushButtonGallery1->setToolTip(QCoreApplication::translate("page1", "Click!", nullptr));
 #endif // QT_CONFIG(tooltip)
-        pushButtonGallery->setText(QCoreApplication::translate("page1", "Gallery", nullptr));
+        pushButtonGallery1->setText(QCoreApplication::translate("page1", "Gallery 1", nullptr));
 #if QT_CONFIG(tooltip)
         pushButtonStart->setToolTip(QCoreApplication::translate("page1", "Start!", nullptr));
 #endif // QT_CONFIG(tooltip)
@@ -106,6 +111,7 @@ public:
         pushButtonSet->setToolTip(QCoreApplication::translate("page1", "Click!", nullptr));
 #endif // QT_CONFIG(tooltip)
         pushButtonSet->setText(QCoreApplication::translate("page1", "Setting", nullptr));
+        pushButtonGallery2->setText(QCoreApplication::translate("page1", "Gallery 2", nullptr));
     } // retranslateUi
 
 };

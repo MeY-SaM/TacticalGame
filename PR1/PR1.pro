@@ -15,6 +15,7 @@ SOURCES += \
     page.cpp \
     page1.cpp \
     pagegallery.cpp \
+    pagegallery1.cpp \
     pagename.cpp
 
 HEADERS += \
@@ -23,12 +24,14 @@ HEADERS += \
     page.h \
     page1.h \
     pagegallery.h \
+    pagegallery1.h \
     pagename.h
 
 FORMS += \
     page.ui \
     page1.ui \
     pagegallery.ui \
+    pagegallery1.ui \
     pagename.ui
 
 # Default rules for deployment.
