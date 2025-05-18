@@ -20,6 +20,8 @@ private slots:
 
 private:
     Ui::pageGallery1 *ui;
+
+    void makeTransparent(QWidget* widget);
 };
 
 #endif // PAGEGALLERY1_H
