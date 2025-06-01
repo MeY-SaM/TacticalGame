@@ -98,7 +98,7 @@ public:
 #if QT_CONFIG(tooltip)
         pushButtonGallery1->setToolTip(QCoreApplication::translate("page1", "Click!", nullptr));
 #endif // QT_CONFIG(tooltip)
-        pushButtonGallery1->setText(QCoreApplication::translate("page1", "Gallery 1", nullptr));
+        pushButtonGallery1->setText(QCoreApplication::translate("page1", "Gallery", nullptr));
 #if QT_CONFIG(tooltip)
         pushButtonStart->setToolTip(QCoreApplication::translate("page1", "Start!", nullptr));
 #endif // QT_CONFIG(tooltip)

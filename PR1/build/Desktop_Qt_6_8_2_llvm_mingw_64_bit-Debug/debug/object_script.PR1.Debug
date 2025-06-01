@@ -1,4 +1,3 @@
-debug/hexagon.o
 debug/bp.o
 debug/main.o
 debug/page.o

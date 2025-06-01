@@ -1,4 +1,3 @@
-release/hexagon.o
 release/bp.o
 release/main.o
 release/page.o
