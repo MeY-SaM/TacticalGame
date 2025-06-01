@@ -9,7 +9,6 @@ CONFIG += c++17
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-    hexagon.cpp \
     bp.cpp \
     main.cpp \
     page.cpp \
@@ -19,7 +18,6 @@ SOURCES += \
     pagename.cpp
 
 HEADERS += \
-    hexagon.h \
     bp.h \
     page.h \
     page1.h \
@@ -40,7 +38,7 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 RESOURCES += \
-    agent.qrc \
+    Agent.qrc \
     bp.qrc \
     page.qrc \
     page1.qrc \

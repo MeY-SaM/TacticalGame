@@ -35,7 +35,7 @@ public:
         this->boardStartX = boardStartX;
     }
 
-protected:
+/*protected:
     QVariant itemChange(GraphicsItemChange change, const QVariant &value) override {
         if (change == ItemPositionChange && scene()) {
             QPointF newPos = value.toPointF();
@@ -47,7 +47,7 @@ protected:
             snapToGrid();
         }
         return QGraphicsItem::itemChange(change, value);
-    }
+    }*/
 
 private:
     void snapToGrid() {
@@ -136,12 +136,10 @@ bp::bp(QWidget *parent) : QWidget(parent) {
                     hexItem->setBrush(QBrush(Qt::yellow));
                 } else if (ch == '2') {
                     hexItem->setBrush(QBrush(Qt::red));
-                } else if (ch == '*') {
+                } else if (ch == '~') {
                     hexItem->setBrush(QBrush(Qt::cyan));
                 } else if (ch == '#') {
                     hexItem->setBrush(QBrush(Qt::gray));
-                } else {
-                    hexItem->setBrush(QBrush(Qt::cyan));
                 }
                 hexItem->setPen(Qt::NoPen);
                 hexItem->setZValue(0);
