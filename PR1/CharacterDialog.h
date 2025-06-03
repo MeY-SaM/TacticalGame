@@ -56,26 +56,33 @@ public:
         : QDialog(parent) {
         setWindowTitle(name);
         QVBoxLayout* layout = new QVBoxLayout(this);
+        //layout->setAlignment(Qt::AlignCenter);
+
 
         QLabel* imageLabel = new QLabel(this);
         QPixmap pixmap(imagePath);
         imageLabel->setPixmap(pixmap.scaled(250, 350, Qt::KeepAspectRatio));
         imageLabel->setAlignment(Qt::AlignCenter);
 
-        QLabel* nameLabel = new QLabel("Name: " + name, this);
+        QLabel* nameLabel = new QLabel("Name : " + name, this);
         nameLabel->setStyleSheet("font-size: 16px; font-weight: bold;");
+        nameLabel->setAlignment(Qt::AlignCenter);
 
-        QLabel* hpLabel = new QLabel(QString("HP: %1").arg(hp), this);
+        QLabel* hpLabel = new QLabel(QString("HP : %1").arg(hp), this);
         hpLabel->setStyleSheet("font-size: 14px;");
+        hpLabel->setAlignment(Qt::AlignCenter);
 
-        QLabel* mobilityLabel = new QLabel(QString("Mobility: %1").arg(mobility), this);
+        QLabel* mobilityLabel = new QLabel(QString("Mobility : %1").arg(mobility), this);
         mobilityLabel->setStyleSheet("font-size: 14px;");
+        mobilityLabel->setAlignment(Qt::AlignCenter);
 
-        QLabel* damageLabel = new QLabel(QString("Damage: %1").arg(damage), this);
+        QLabel* damageLabel = new QLabel(QString("Damage : %1").arg(damage), this);
         damageLabel->setStyleSheet("font-size: 14px;");
+        damageLabel->setAlignment(Qt::AlignCenter);
 
-        QLabel* attackRangeLabel = new QLabel(QString("Attack Range: %1").arg(attackRange), this);
+        QLabel* attackRangeLabel = new QLabel(QString("Attack Range : %1").arg(attackRange), this);
         attackRangeLabel->setStyleSheet("font-size: 14px;");
+        attackRangeLabel->setAlignment(Qt::AlignCenter);
 
         layout->addWidget(imageLabel);
         layout->addWidget(nameLabel);
@@ -90,6 +97,9 @@ public:
 
         setLayout(layout);
         setFixedSize(400, 600);
+
+        // move(176, 46);
+
     }
 };
 #endif // CHARACTERDIALOG_H
