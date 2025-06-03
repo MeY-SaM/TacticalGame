@@ -21,14 +21,14 @@ struct CharacterInfo {
     int hp;
     int mobility;
     int damage;
-    int attackRange;
+    float attackRange;
 };
 
 CharacterInfo waterwalkingcharacterData[] = {
     {"Angus", 400, 2, 100 , 1},
     {"Billy", 320, 3, 90, 1},
     {"Bunka", 320, 3, 100, 1},
-    {"ColonelBaba", 400 , 2, 100, 1},
+    {"Colonel Baba", 400 , 2, 100, 1},
     {"Duraham", 320, 2, 100, 2},
     {"Medusa", 320, 2, 90, 2},
     {"Reketon", 320, 2, 80, 2},
@@ -36,7 +36,7 @@ CharacterInfo waterwalkingcharacterData[] = {
 };
 CharacterInfo groundedCharacterData[] = {
     {"Boi", 400, 2, 100, 1},
-    {"Eloi", 240, 2, 100, 2},
+    {"Eloi", 240, 2, 100, 2.3},
     {"Elsa", 320, 2, 140, 2},
     {"Frost", 260, 2, 80, 2},
     {"Kabu", 400 , 2, 120, 1},
@@ -52,9 +52,10 @@ CharacterInfo groundedCharacterData[] = {
 
 class CharacterDialog : public QDialog {
 public:
-    CharacterDialog(const QString& name, int hp, int mobility, int damage, int attackRange, const QString& imagePath, QWidget* parent = nullptr)
+    CharacterDialog(const QString& name, int hp, int mobility, int damage, float attackRange, const QString& imagePath, QWidget* parent = nullptr)
         : QDialog(parent) {
         setWindowTitle(name);
+
         QVBoxLayout* layout = new QVBoxLayout(this);
         //layout->setAlignment(Qt::AlignCenter);
 
@@ -65,23 +66,23 @@ public:
         imageLabel->setAlignment(Qt::AlignCenter);
 
         QLabel* nameLabel = new QLabel("Name : " + name, this);
-        nameLabel->setStyleSheet("font-size: 16px; font-weight: bold;");
+        nameLabel->setStyleSheet("font-size: 18px; font-weight: bold;");
         nameLabel->setAlignment(Qt::AlignCenter);
 
         QLabel* hpLabel = new QLabel(QString("HP : %1").arg(hp), this);
-        hpLabel->setStyleSheet("font-size: 14px;");
+        hpLabel->setStyleSheet("font-size: 16px;");
         hpLabel->setAlignment(Qt::AlignCenter);
 
         QLabel* mobilityLabel = new QLabel(QString("Mobility : %1").arg(mobility), this);
-        mobilityLabel->setStyleSheet("font-size: 14px;");
+        mobilityLabel->setStyleSheet("font-size: 16px;");
         mobilityLabel->setAlignment(Qt::AlignCenter);
 
         QLabel* damageLabel = new QLabel(QString("Damage : %1").arg(damage), this);
-        damageLabel->setStyleSheet("font-size: 14px;");
+        damageLabel->setStyleSheet("font-size: 16px;");
         damageLabel->setAlignment(Qt::AlignCenter);
 
         QLabel* attackRangeLabel = new QLabel(QString("Attack Range : %1").arg(attackRange), this);
-        attackRangeLabel->setStyleSheet("font-size: 14px;");
+        attackRangeLabel->setStyleSheet("font-size: 16px;");
         attackRangeLabel->setAlignment(Qt::AlignCenter);
 
         layout->addWidget(imageLabel);

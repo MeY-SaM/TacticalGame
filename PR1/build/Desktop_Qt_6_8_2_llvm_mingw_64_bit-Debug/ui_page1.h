@@ -77,7 +77,15 @@ public:
         pushButtonGallery2 = new QPushButton(centralwidget);
         pushButtonGallery2->setObjectName("pushButtonGallery2");
         pushButtonGallery2->setGeometry(QRect(780, 220, 181, 61));
-        pushButtonGallery2->setFont(font);
+        QFont font4;
+        font4.setFamilies({QString::fromUtf8("Segoe Print")});
+        font4.setPointSize(20);
+        font4.setBold(true);
+        font4.setItalic(false);
+        font4.setUnderline(false);
+        font4.setStrikeOut(false);
+        pushButtonGallery2->setFont(font4);
+        pushButtonGallery2->setFocusPolicy(Qt::FocusPolicy::NoFocus);
         page1->setCentralWidget(centralwidget);
         menubar = new QMenuBar(page1);
         menubar->setObjectName("menubar");

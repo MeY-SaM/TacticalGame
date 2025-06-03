@@ -46,7 +46,7 @@
      <bool>true</bool>
     </property>
     <property name="text">
-     <string>Gallery 1</string>
+     <string>Gallery</string>
     </property>
    </widget>
    <widget class="QPushButton" name="pushButtonStart">
@@ -131,8 +131,14 @@
      <font>
       <family>Segoe Print</family>
       <pointsize>20</pointsize>
+      <italic>false</italic>
       <bold>true</bold>
+      <underline>false</underline>
+      <strikeout>false</strikeout>
      </font>
+    </property>
+    <property name="focusPolicy">
+     <enum>Qt::FocusPolicy::NoFocus</enum>
     </property>
     <property name="text">
      <string>Gallery 2</string>
