@@ -18,6 +18,7 @@ SOURCES += \
     pagename.cpp
 
 HEADERS += \
+    CharacterDialog.h \
     bp.h \
     page.h \
     page1.h \

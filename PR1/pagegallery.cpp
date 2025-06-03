@@ -1,7 +1,7 @@
 #include "pagegallery.h"
 #include "ui_pagegallery.h"
 #include "page1.h"
-
+#include "CharacterDialog.h"
 #include <QTabWidget>
 #include <QPushButton>
 #include <QGridLayout>
@@ -9,7 +9,6 @@
 #include <QHBoxLayout>
 #include <QWidget>
 #include <QGridLayout>
-#include <QPushButton>
 #include <QScrollArea>
 #include <QTabWidget>
 
@@ -73,7 +72,7 @@ pageGallery::pageGallery(QWidget *parent)
     QWidget *scrollContent = new QWidget;
     QGridLayout *layout1 = new QGridLayout(scrollContent);
 
-    layout1->setVerticalSpacing(40);
+    layout1->setVerticalSpacing(50);
 
     QString imagePaths[] = {
         ":/Water Walking/angus.png",
@@ -105,6 +104,20 @@ pageGallery::pageGallery(QWidget *parent)
         btn->setIcon(buttonIcon);
         btn->setIconSize(QSize(250, 350));
         layout1->addWidget(btn, i / 3, i % 3);
+
+        connect(btn, &QPushButton::clicked, [=]() {
+            CharacterDialog* dialog = new CharacterDialog(
+                waterwalkingcharacterData[i].name,
+                waterwalkingcharacterData[i].hp,
+                waterwalkingcharacterData[i].mobility,
+                waterwalkingcharacterData[i].damage,
+                waterwalkingcharacterData[i].attackRange,
+                imagePaths[i],
+                tab1
+                );
+            dialog->setAttribute(Qt::WA_DeleteOnClose);
+            dialog->exec();
+        });
     }
     scrollContent->setMinimumSize(scrollContent->sizeHint());
 
@@ -125,7 +138,7 @@ pageGallery::pageGallery(QWidget *parent)
     QWidget *scrollContent2 = new QWidget;
     QGridLayout *layout2 = new QGridLayout(scrollContent2);
 
-    layout2->setVerticalSpacing(40);
+    layout2->setVerticalSpacing(50);
 
     QString imagesPaths[] = {
         ":/Grounded/boi.png",
@@ -161,6 +174,21 @@ pageGallery::pageGallery(QWidget *parent)
         btn->setIcon(buttonIcon);
         btn->setIconSize(QSize(250, 350));
         layout2->addWidget(btn, i / 3, i % 3);
+
+        connect(btn, &QPushButton::clicked, [=]() {
+            CharacterDialog* dialog = new CharacterDialog(
+                groundedCharacterData[i].name,
+                groundedCharacterData[i].hp,
+                groundedCharacterData[i].mobility,
+                groundedCharacterData[i].damage,
+                groundedCharacterData[i].attackRange,
+                imagesPaths[i],
+                tab2
+                );
+            dialog->setAttribute(Qt::WA_DeleteOnClose);
+            dialog->exec();
+        });
+
 
 
     }
@@ -200,6 +228,20 @@ pageGallery::pageGallery(QWidget *parent)
     QIcon buttonIcon1(":/Flying/rambu.png");
     btn3->setIcon(buttonIcon1);
     btn3->setIconSize(QSize(250, 350));
+
+    connect(btn3, &QPushButton::clicked, [=]() {
+        CharacterDialog* dialog = new CharacterDialog(
+            "Rambo",
+            320,
+            3,
+            120,
+            1,
+            ":/Flying/rambu.png",
+            tab3
+            );
+        dialog->setAttribute(Qt::WA_DeleteOnClose);
+        dialog->exec();
+    });
 
     layout3->addStretch();
     layout3->addWidget(btn3, 0, Qt::AlignCenter);
@@ -241,6 +283,34 @@ pageGallery::pageGallery(QWidget *parent)
     QIcon buttonIcon3(":/Floating/sabrina.png");
     btnB->setIcon(buttonIcon3);
     btnB->setIconSize(QSize(250, 350));
+
+    connect(btnA, &QPushButton::clicked, [=]() {
+        CharacterDialog* dialog = new CharacterDialog(
+            "Death",
+            240,
+            3,
+            120,
+            2,
+            ":/Floating/death.png",
+            tab4
+            );
+        dialog->setAttribute(Qt::WA_DeleteOnClose);
+        dialog->exec();
+    });
+
+    connect(btnB, &QPushButton::clicked, [=]() {
+        CharacterDialog* dialog = new CharacterDialog(
+            "Sabrina",
+            320,
+            3,
+            100,
+            1,
+            ":/Floating/sabrina.png",
+            tab4
+            );
+        dialog->setAttribute(Qt::WA_DeleteOnClose);
+        dialog->exec();
+    });
 
 
     tabWidget->addTab(tab4, "Floating");
