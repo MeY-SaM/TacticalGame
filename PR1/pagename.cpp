@@ -66,7 +66,7 @@ void pageName::on_pushButton_clicked()
     }
     else
     {
-        bp *w= new bp;
+        HexHame *w= new HexHame;
         w->show();
         this->hide();
     }
