@@ -8,26 +8,26 @@
 #include <QRandomGenerator>
 
 HexGame::HexGame(QWidget *parent) : QWidget(parent), leftHex(nullptr), rightHex(nullptr) {
-    setFixedSize(1184, 672);
+    setFixedSize(1184, 800);
     scene = new QGraphicsScene(this);
     view = new QGraphicsView(scene, this);
     view->setRenderHint(QPainter::Antialiasing);
-    view->setFixedSize(1184, 672);
-    scene->setSceneRect(0, 0, 1184, 672);
+    view->setFixedSize(1184, 800);
+    scene->setSceneRect(0, 0, 1184, 800);
     view->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     view->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
-    QPixmap background(":/new/prefix1/1000097401.jpg.png");
+    QPixmap background(":/BoardImage.png");
     if (!background.isNull()) {
-        QGraphicsPixmapItem *backgroundItem = new QGraphicsPixmapItem(background);
+        QPixmap scaledBackground = background.scaled(1184, 800, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+        QGraphicsPixmapItem *backgroundItem = new QGraphicsPixmapItem(scaledBackground);
         backgroundItem->setZValue(-1);
         scene->addItem(backgroundItem);
     } else {
         qDebug() << "Failed to load background image";
     }
-
-    scene->addRect(0, 0, 150, 672, QPen(Qt::NoPen), QBrush(QColor(128, 128, 128, 100)));
-    scene->addRect(1034, 0, 150, 672, QPen(Qt::NoPen), QBrush(QColor(128, 128, 128, 100)));
+    scene->addRect(0, 0, 150, 800, QPen(Qt::NoPen), QBrush(QColor(128, 128, 128, 100)));
+    scene->addRect(1034, 0, 150, 800, QPen(Qt::NoPen), QBrush(QColor(128, 128, 128, 100)));
 
     const int hexCount = 41;
     hexagons_.resize(hexCount);
@@ -93,7 +93,7 @@ void HexGame::setupHexagons() {
     const int hexCount = 41;
     const qreal verticalSpacing = 43.3;
     const qreal xOffset = 259;
-    const qreal yOffset = 100;
+    const qreal yOffset = 170;
     int b = 0;
     for (int var = 0; var <= 4; ++var) {
         hexagons_[var] = new Hexagon(xOffset + b, yOffset, ' ', var);

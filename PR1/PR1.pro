@@ -10,7 +10,6 @@ CONFIG += c++17
 
 SOURCES += \
     draggablehexagon.cpp \
-    hexagon.cpp \
     hexgame.cpp \
     main.cpp \
     page.cpp \

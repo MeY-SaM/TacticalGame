@@ -9,4 +9,7 @@
         <file>grid7.txt</file>
         <file>grid8.txt</file>
     </qresource>
+    <qresource prefix="/">
+        <file>BoardImage.png</file>
+    </qresource>
 </RCC>

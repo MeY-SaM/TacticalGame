@@ -5,9 +5,8 @@
 #include <QGraphicsSceneMouseEvent>
 #include <QPointF>
 #include <QChar>
-#include "hexagon.h"
+//#include "hexagon.h"
 
-// Forward declaration of HexGame to avoid circular dependency
 class HexGame;
 
 class DraggableHexagon : public QGraphicsPolygonItem {
