@@ -9,7 +9,8 @@ CONFIG += c++17
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-    bp.cpp \
+    hexagon.cpp \
+    hexgame.cpp \
     main.cpp \
     page.cpp \
     page1.cpp \
@@ -19,7 +20,8 @@ SOURCES += \
 
 HEADERS += \
     CharacterDialog.h \
-    bp.h \
+    hexagon.h \
+    hexgame.h \
     page.h \
     page1.h \
     pagegallery.h \

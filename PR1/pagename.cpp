@@ -1,6 +1,5 @@
 #include "pagename.h"
 #include "ui_pagename.h"
-#include "bp.h"
 #include "page1.h"
 
 
