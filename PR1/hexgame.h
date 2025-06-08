@@ -14,7 +14,7 @@
 #include <QGraphicsTextItem>
 #include <cmath>
 #include "hexagon.h"
-
+#include "draggablehexagon.h"
 
 class HexGame : public QWidget {
     Q_OBJECT
