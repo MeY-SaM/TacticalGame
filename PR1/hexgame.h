@@ -35,8 +35,8 @@ private:
     std::vector<Hexagon*> hexagons_;
     QGraphicsScene* scene;
     QGraphicsView* view;
-    DraggableHexagon* leftHex;
-    DraggableHexagon* rightHex;
+    std::vector<DraggableHexagon*> leftHexagons;
+    std::vector<DraggableHexagon*> rightHexagons;
 };
 
 #endif // HEXGAME_H

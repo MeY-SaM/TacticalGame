@@ -7,7 +7,7 @@
 #include <QLabel>
 #include <QRandomGenerator>
 
-HexGame::HexGame(QWidget *parent) : QWidget(parent), leftHex(nullptr), rightHex(nullptr) {
+HexGame::HexGame(QWidget *parent) : QWidget(parent) {
     setFixedSize(1184, 800);
     scene = new QGraphicsScene(this);
     view = new QGraphicsView(scene, this);
@@ -39,13 +39,21 @@ HexGame::HexGame(QWidget *parent) : QWidget(parent), leftHex(nullptr), rightHex(
     QString gridFile = QString(":/new/prefix1/grid%1.txt").arg(randomNum);
     loadGrid(gridFile);
 
-    QPolygonF hexShape = createHexagon(75, 336, 50);
-    leftHex = new DraggableHexagon(hexShape, '1', QPointF(75, 336), this);
-    scene->addItem(leftHex);
+    leftHexagons.resize(8);
+    for (size_t i = 0; i < 8; ++i) {
+        float y =  50 + i * 100;
+        QPolygonF hexShape = createHexagon(75, y, 50);
+        leftHexagons[i] = new DraggableHexagon(hexShape, '1', QPointF(75, y), this);
+        scene->addItem(leftHexagons[i]);
+    }
 
-    hexShape = createHexagon(1109, 336, 50);
-    rightHex = new DraggableHexagon(hexShape, '2', QPointF(1109, 336), this);
-    scene->addItem(rightHex);
+    rightHexagons.resize(8);
+    for (size_t i = 0; i < 8; ++i) {
+        float y = 50 + i * 100;
+        QPolygonF hexShape = createHexagon(1109, y, 50);
+        rightHexagons[i] = new DraggableHexagon(hexShape, '2', QPointF(1109, y), this);
+        scene->addItem(rightHexagons[i]);
+    }
 
     drawBoard();
 
@@ -56,8 +64,13 @@ HexGame::~HexGame() {
     for (Hexagon *hex : hexagons_) {
         delete hex;
     }
-    delete leftHex;
-    delete rightHex;
+    for (DraggableHexagon *hex : leftHexagons) {
+        delete hex;
+    }
+    for (DraggableHexagon *hex : rightHexagons) {
+        delete hex;
+    }
+
     delete scene;
     delete view;
 }
@@ -391,9 +404,16 @@ Hexagon* HexGame::findNearestCell(const QPointF& pos, qreal& minDistance) {
 
 void HexGame::drawBoard() {
     QList<QGraphicsItem*> itemsToKeep;
-    itemsToKeep << leftHex << rightHex;
+    for (DraggableHexagon* hex : leftHexagons) {
+        itemsToKeep << hex;
+    }
+    for (DraggableHexagon* hex : rightHexagons) {
+        itemsToKeep << hex;
+    }
     for (QGraphicsItem* item : scene->items()) {
-        if (item->type() == QGraphicsRectItem::Type || item->type() == QGraphicsPixmapItem::Type || itemsToKeep.contains(item)) {
+        if (item->type() == QGraphicsRectItem::Type ||
+            item->type() == QGraphicsPixmapItem::Type ||
+            itemsToKeep.contains(item)) {
             continue;
         }
         scene->removeItem(item);

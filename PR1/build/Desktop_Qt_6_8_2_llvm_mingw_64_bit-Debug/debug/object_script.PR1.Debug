@@ -1,4 +1,5 @@
-debug/bp.o
+debug/draggablehexagon.o
+debug/hexgame.o
 debug/main.o
 debug/page.o
 debug/page1.o
@@ -11,7 +12,7 @@ debug/qrc_page.o
 debug/qrc_page1.o
 debug/qrc_pageGallery.o
 debug/qrc_pageName.o
-debug/moc_bp.o
+debug/moc_hexgame.o
 debug/moc_page.o
 debug/moc_page1.o
 debug/moc_pagegallery.o
