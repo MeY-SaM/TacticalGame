@@ -260,6 +260,8 @@ void HexGame::initializeNeighbors() {
     hexagons_[21]->setNeighbor(2, hexagons_[25]);
     hexagons_[21]->setNeighbor(3, hexagons_[30]);
     hexagons_[21]->setNeighbor(4, hexagons_[26]);
+    hexagons_[21]->setNeighbor(5, hexagons_[17]);
+
     hexagons_[22]->setNeighbor(0, hexagons_[13]);
     hexagons_[22]->setNeighbor(1, hexagons_[17]);
     hexagons_[22]->setNeighbor(2, hexagons_[26]);
@@ -469,7 +471,7 @@ std::vector<Hexagon*> HexGame::bfs(Hexagon* start, QChar type) {
             result.insert(result.end(), currentPath.begin(), currentPath.end());
         }
 
-        if (currentPath.size() < 2) {
+        if (currentPath.size() < 1) {
             for (int i = 0; i < 6; ++i) {
                 Hexagon* neighbor = current->getNeighbor(i);
                 if (neighbor && visited.find(neighbor) == visited.end() && neighbor != start) {
