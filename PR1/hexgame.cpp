@@ -6,7 +6,8 @@
 #include <QVBoxLayout>
 #include <QLabel>
 #include <QRandomGenerator>
-
+#include <queue>
+#include <set>
 HexGame::HexGame(QWidget *parent) : QWidget(parent) {
     setFixedSize(1184, 800);
     scene = new QGraphicsScene(this);
@@ -103,7 +104,7 @@ void HexGame::loadGrid(const QString &filename) {
 }
 
 void HexGame::setupHexagons() {
-    const int hexCount = 41;
+   // const int hexCount = 41;
     const qreal verticalSpacing = 43.3;
     const qreal xOffset = 259;
     const qreal yOffset = 170;
@@ -247,7 +248,7 @@ void HexGame::initializeNeighbors() {
     hexagons_[19]->setNeighbor(2, hexagons_[23]);
     hexagons_[19]->setNeighbor(3, hexagons_[28]);
     hexagons_[19]->setNeighbor(4, hexagons_[24]);
-    hexagons_[19]->setNeighbor(5, hexagons_[11]);
+    hexagons_[19]->setNeighbor(5, hexagons_[15]);
     hexagons_[20]->setNeighbor(0, hexagons_[11]);
     hexagons_[20]->setNeighbor(1, hexagons_[15]);
     hexagons_[20]->setNeighbor(2, hexagons_[24]);
@@ -437,10 +438,83 @@ void HexGame::drawBoard() {
         } else {
             hexItem->setBrush(QColor("white"));
         }
-        hexItem->setPen(QPen(Qt::black, 10));
+        hexItem->setPen(QPen(Qt::black, 5));
         hexItem->setZValue(0);
         scene->addItem(hexItem);
     }
 
     view->show();
 }
+std::vector<Hexagon*> HexGame::bfs(Hexagon* start, QChar type) {
+    std::vector<Hexagon*> result;
+    std::queue<std::vector<Hexagon*>> queue;
+    std::set<Hexagon*> visited;
+
+    for (int i = 0; i < 6; ++i) {
+        Hexagon* neighbor = start->getNeighbor(i);
+        if (neighbor && visited.find(neighbor) == visited.end()) {
+            visited.insert(neighbor);
+            std::vector<Hexagon*> initialPath = {neighbor};
+            queue.push(initialPath);
+        }
+    }
+
+    while (!queue.empty()) {
+        std::vector<Hexagon*> currentPath = queue.front();
+        queue.pop();
+
+        Hexagon* current = currentPath.back();
+
+        if (currentPath.size() >= 1 && currentPath.size() <= 3) {
+            result.insert(result.end(), currentPath.begin(), currentPath.end());
+        }
+
+        if (currentPath.size() < 2) {
+            for (int i = 0; i < 6; ++i) {
+                Hexagon* neighbor = current->getNeighbor(i);
+                if (neighbor && visited.find(neighbor) == visited.end() && neighbor != start) {
+                    visited.insert(neighbor);
+                    std::vector<Hexagon*> newPath = currentPath;
+                    newPath.push_back(neighbor);
+                    queue.push(newPath);
+                }
+            }
+        }
+    }
+
+    std::vector<Hexagon*> uniqueResult;
+    std::set<Hexagon*> seen;
+    for (Hexagon* hex : result) {
+        if (seen.find(hex) == seen.end()) {
+            seen.insert(hex);
+            uniqueResult.push_back(hex);
+        }
+    }
+
+    return uniqueResult;
+}
+void HexGame::highlightPath(const std::vector<Hexagon*>& path) {
+    clearHighlight();
+    for (Hexagon* hex : path) {
+        QPointF center = hex->getCenter();
+        QPolygonF hexShape = createHexagon(center.x(), center.y(), 50);
+        QGraphicsPolygonItem* hexItem = new QGraphicsPolygonItem(hexShape);
+        hexItem->setBrush(QColor(0, 255, 0,200));
+        hexItem->setPen(QPen(Qt::black, 2));
+        hexItem->setZValue(5);
+        scene->addItem(hexItem);
+    }
+    view->update();
+}
+
+void HexGame::clearHighlight() {
+    for (QGraphicsItem* item : scene->items()) {
+        if (item->type() == QGraphicsPolygonItem::Type &&
+            item->zValue() == 5) {
+            scene->removeItem(item);
+            delete item;
+        }
+    }
+}
+
+

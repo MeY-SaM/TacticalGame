@@ -20,6 +20,8 @@ private:
     QChar type;
     QPointF originalPos;
     HexGame* game;
+    bool isHighlighted;
+
 };
 
 #endif // DRAGGABLEHEXAGON_H

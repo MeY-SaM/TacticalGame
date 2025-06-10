@@ -26,6 +26,9 @@ public:
     Hexagon* findNearestCell(const QPointF& pos, qreal& minDistance);
     QPolygonF createHexagon(qreal x, qreal y, qreal radius) const;
     void drawBoard();
+    std::vector<Hexagon*> bfs(Hexagon* start, QChar type);
+    void highlightPath(const std::vector<Hexagon*>& path);
+    void clearHighlight();
 
 private:
     void loadGrid(const QString &filename);

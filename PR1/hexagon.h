@@ -8,7 +8,7 @@
 class Hexagon {
 public:
     explicit Hexagon(qreal x, qreal y, QChar value = ' ', int index = -1)
-        : posX_(x), posY_(y), value_(value), index_(index),
+        : value_(value),posX_(x), posY_(y), index_(index),
         neighbor0_(nullptr), neighbor1_(nullptr), neighbor2_(nullptr),
         neighbor3_(nullptr), neighbor4_(nullptr), neighbor5_(nullptr) {
         polygon_ << QPointF(17.5, 0) << QPointF(52.5, 0)
