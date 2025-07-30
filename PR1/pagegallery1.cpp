@@ -169,7 +169,7 @@ void pageGallery1::handleButtonClick(QPushButton* button, int index, bool isLeft
     if (button->isChecked()) {
         if (selectedButtons.size() >= 8 && !selectedButtons.contains(button)) {
             button->setChecked(false);
-            QMessageBox::warning(this, "Warning", "You cannot select more than 8 buttons in this section.\n Please deselect one first.");
+            QMessageBox::warning(this, "Warning", "You cannot select more than 8 buttons in this section.\nPlease deselect one first.");
             return;
         }
         if (!selectedButtons.contains(button)) {
