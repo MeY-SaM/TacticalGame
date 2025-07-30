@@ -3,6 +3,11 @@
 
 #include <QMainWindow>
 
+#include <QMainWindow>
+#include <QPushButton>
+#include <QList>
+#include <QScrollArea>
+
 namespace Ui {
 class pageGallery1;
 }
@@ -16,12 +21,21 @@ public:
     ~pageGallery1();
 
 private slots:
-    void on_pushButton_clicked();
+    void handlePlayButtonClick();
+
 
 private:
     Ui::pageGallery1 *ui;
+    QScrollArea* leftScrollArea;
+    QScrollArea* rightScrollArea;
+    QList<QPushButton*> leftButtons;
+    QList<QPushButton*> rightButtons;
+    QList<QPushButton*> selectedLeftButtons;
+    QList<QPushButton*> selectedRightButtons;
 
-    void makeTransparent(QWidget* widget);
+    void setupSection(QWidget* container, bool isLeft);
+    void handleButtonClick(QPushButton* button, int index, bool isLeft);
+    void executeButtonAction(int index);
 };
 
 #endif // PAGEGALLERY1_H

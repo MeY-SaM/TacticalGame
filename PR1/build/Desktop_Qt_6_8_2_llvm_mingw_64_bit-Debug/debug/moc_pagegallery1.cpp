@@ -38,7 +38,7 @@ struct qt_meta_tag_ZN12pageGallery1E_t {};
 #ifdef QT_MOC_HAS_STRINGDATA
 static constexpr auto qt_meta_stringdata_ZN12pageGallery1E = QtMocHelpers::stringData(
     "pageGallery1",
-    "on_pushButton_clicked",
+    "handlePlayButtonClick",
     ""
 );
 #else  // !QT_MOC_HAS_STRINGDATA
@@ -76,7 +76,7 @@ Q_CONSTINIT const QMetaObject pageGallery1::staticMetaObject = { {
     qt_incomplete_metaTypeArray<qt_meta_tag_ZN12pageGallery1E_t,
         // Q_OBJECT / Q_GADGET
         QtPrivate::TypeAndForceComplete<pageGallery1, std::true_type>,
-        // method 'on_pushButton_clicked'
+        // method 'handlePlayButtonClick'
         QtPrivate::TypeAndForceComplete<void, std::false_type>
     >,
     nullptr
@@ -87,7 +87,7 @@ void pageGallery1::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id
     auto *_t = static_cast<pageGallery1 *>(_o);
     if (_c == QMetaObject::InvokeMetaMethod) {
         switch (_id) {
-        case 0: _t->on_pushButton_clicked(); break;
+        case 0: _t->handlePlayButtonClick(); break;
         default: ;
         }
     }

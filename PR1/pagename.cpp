@@ -2,7 +2,8 @@
 #include "ui_pagename.h"
 #include "page1.h"
 #include "QMessageBox"
-#include "hexgame.h"
+#include "pagegallery1.h"
+
 pageName::pageName(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::pageName)
@@ -64,7 +65,7 @@ void pageName::on_pushButton_clicked()
     }
     else
     {
-        HexGame *w= new HexGame;
+        pageGallery1 *w= new pageGallery1;
         w->show();
         this->hide();
     }

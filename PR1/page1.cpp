@@ -28,16 +28,7 @@ page1::page1(QWidget *parent)
         "    color:white;"
         "}"
         );
-    ui->pushButtonGallery2->setStyleSheet(
-        "QPushButton {"
-        "    background-color: transparent;"
-        "    border: none;"
-        "    color:rgb(245, 200, 110);"
-        "}"
-        "QPushButton:hover {"
-        "    color:white;"
-        "}"
-        );
+
     ui->pushButtonStart-> setStyleSheet(
         "QPushButton {"
         "    background-color: transparent;"
@@ -90,12 +81,7 @@ void page1::on_pushButtonStart_clicked()
 }
 
 
-void page1::on_pushButtonGallery2_clicked()
-{
-    pageGallery1 *w1 = new pageGallery1;
-    w1->show();
-    this->hide();
-}
+
 
 
 

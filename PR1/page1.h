@@ -20,7 +20,6 @@ private slots:
 
     void on_pushButtonStart_clicked();
 
-    void on_pushButtonGallery2_clicked();
 
 
 

@@ -27,7 +27,6 @@ public:
     QPushButton *pushButtonStart;
     QPushButton *pushButtonDis;
     QPushButton *pushButtonSet;
-    QPushButton *pushButtonGallery2;
     QMenuBar *menubar;
     QStatusBar *statusBar;
 
@@ -74,18 +73,6 @@ public:
         font3.setPointSize(12);
         font3.setBold(true);
         pushButtonSet->setFont(font3);
-        pushButtonGallery2 = new QPushButton(centralwidget);
-        pushButtonGallery2->setObjectName("pushButtonGallery2");
-        pushButtonGallery2->setGeometry(QRect(780, 220, 181, 61));
-        QFont font4;
-        font4.setFamilies({QString::fromUtf8("Segoe Print")});
-        font4.setPointSize(20);
-        font4.setBold(true);
-        font4.setItalic(false);
-        font4.setUnderline(false);
-        font4.setStrikeOut(false);
-        pushButtonGallery2->setFont(font4);
-        pushButtonGallery2->setFocusPolicy(Qt::FocusPolicy::NoFocus);
         page1->setCentralWidget(centralwidget);
         menubar = new QMenuBar(page1);
         menubar->setObjectName("menubar");
@@ -119,7 +106,6 @@ public:
         pushButtonSet->setToolTip(QCoreApplication::translate("page1", "Click!", nullptr));
 #endif // QT_CONFIG(tooltip)
         pushButtonSet->setText(QCoreApplication::translate("page1", "Setting", nullptr));
-        pushButtonGallery2->setText(QCoreApplication::translate("page1", "Gallery 2", nullptr));
     } // retranslateUi
 
 };
