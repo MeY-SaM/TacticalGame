@@ -1,15 +1,19 @@
 #include "hexgame.h"
+#include "draggableagent.h"
 #include <QApplication>
 #include <QDebug>
 #include <cmath>
 #include <QScrollArea>
 #include <QVBoxLayout>
 #include <QLabel>
-#include <QRandomGenerator>
 #include <queue>
 #include <set>
+#include <string>
+#include <memory>
+
 HexGame::HexGame(QWidget *parent) : QWidget(parent) {
     setFixedSize(1184, 800);
+
     scene = new QGraphicsScene(this);
     view = new QGraphicsView(scene, this);
     view->setRenderHint(QPainter::Antialiasing);
@@ -20,13 +24,14 @@ HexGame::HexGame(QWidget *parent) : QWidget(parent) {
 
     QPixmap background(":/BoardImage.png");
     if (!background.isNull()) {
-        QPixmap scaledBackground = background.scaled(1184, 800, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+        QPixmap scaledBackground = background.scaled(background.width(), 800, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
         QGraphicsPixmapItem *backgroundItem = new QGraphicsPixmapItem(scaledBackground);
         backgroundItem->setZValue(-1);
         scene->addItem(backgroundItem);
     } else {
         qDebug() << "Failed to load background image";
     }
+
     scene->addRect(0, 0, 150, 800, QPen(Qt::NoPen), QBrush(QColor(128, 128, 128, 100)));
     scene->addRect(1034, 0, 150, 800, QPen(Qt::NoPen), QBrush(QColor(128, 128, 128, 100)));
 
@@ -36,23 +41,29 @@ HexGame::HexGame(QWidget *parent) : QWidget(parent) {
 
     initializeNeighbors();
 
-    int randomNum = QRandomGenerator::global()->bounded(1, 9);
-    QString gridFile = QString(":/new/prefix1/grid%1.txt").arg(randomNum);
-    loadGrid(gridFile);
-
+    loadGrid(":/new/prefix1/grid4.txt");
     leftHexagons.resize(8);
+    std::vector<std::pair<QString, int>> leftTypes = {
+        {"Alpha", 1}, {"Beta", 2}, {"Gamma", 2}, {"Delta", 2},
+        {"Epsilon", 2}, {"Zeta", 2}, {"Eta", 3}, {"Theta", 4}
+    };
     for (size_t i = 0; i < 8; ++i) {
-        float y =  50 + i * 100;
+        float y = 50 + i * 100;
         QPolygonF hexShape = createHexagon(75, y, 50);
-        leftHexagons[i] = new DraggableHexagon(hexShape, '1', QPointF(75, y), this);
+        Agent* agent = new Flying(leftTypes[i].first, 320, leftTypes[i].second, 90, 1);
+        leftHexagons[i] = new DraggableAgent(hexShape, agent, '1', QPointF(75, y), this);
         scene->addItem(leftHexagons[i]);
     }
-
     rightHexagons.resize(8);
+    std::vector<std::pair<QString, int>> rightTypes = {
+        {"Rekton", 1}, {"Xerath", 2}, {"Angus", 2}, {"Duraham", 2},
+        {"ColonelBaba", 2}, {"Medusa", 2}, {"Bunka", 3}, {"Sanka", 4}
+    };
     for (size_t i = 0; i < 8; ++i) {
         float y = 50 + i * 100;
         QPolygonF hexShape = createHexagon(1109, y, 50);
-        rightHexagons[i] = new DraggableHexagon(hexShape, '2', QPointF(1109, y), this);
+        Agent* agent = new WaterWalking(rightTypes[i].first, 320, rightTypes[i].second, 90, 1);
+        rightHexagons[i] = new DraggableWaterWalking(hexShape, dynamic_cast<WaterWalking*>(agent), '2', QPointF(1109, y), this);
         scene->addItem(rightHexagons[i]);
     }
 
@@ -65,13 +76,12 @@ HexGame::~HexGame() {
     for (Hexagon *hex : hexagons_) {
         delete hex;
     }
-    for (DraggableHexagon *hex : leftHexagons) {
-        delete hex;
+    for (DraggableAgent *agent : leftHexagons) {
+        delete agent;
     }
-    for (DraggableHexagon *hex : rightHexagons) {
-        delete hex;
+    for (DraggableAgent *agent : rightHexagons) {
+        delete agent;
     }
-
     delete scene;
     delete view;
 }
@@ -82,19 +92,24 @@ void HexGame::loadGrid(const QString &filename) {
         qDebug() << "Cannot open file:" << filename;
         return;
     }
-
     QTextStream in(&file);
     QStringList lines = in.readAll().split('\n');
     file.close();
 
-    int hexIndex = 0;
-    for (int row = 0; row < lines.size() - 1 && hexIndex < hexagons_.size(); ++row) {
+    size_t hexIndex = 0;
+    for (qsizetype row = 0; row < lines.size() && hexIndex < hexagons_.size(); ++row) {
         const QString& line = lines[row];
-        for (int col = 0; col < line.length() && hexIndex < hexagons_.size(); ++col) {
+        for (qsizetype col = 0; col < line.length() && hexIndex < hexagons_.size(); ++col) {
             if (line[col] == '/' && col + 1 < line.length()) {
                 QChar value = line[col + 1];
                 if (value == '~' || value == '#' || value == '1' || value == '2' || value == ' ') {
-                    hexagons_[hexIndex]->setValue(value);
+                    if (value == '1') {
+                        hexagons_[hexIndex]->setValue("s1");
+                    } else if (value == '2') {
+                        hexagons_[hexIndex]->setValue("s2");
+                    } else {
+                        hexagons_[hexIndex]->setValue(QString(value));
+                    }
                     ++hexIndex;
                     ++col;
                 }
@@ -104,53 +119,52 @@ void HexGame::loadGrid(const QString &filename) {
 }
 
 void HexGame::setupHexagons() {
-   // const int hexCount = 41;
     const qreal verticalSpacing = 43.3;
     const qreal xOffset = 259;
     const qreal yOffset = 170;
     int b = 0;
     for (int var = 0; var <= 4; ++var) {
-        hexagons_[var] = new Hexagon(xOffset + b, yOffset, ' ', var);
+        hexagons_[var] = new Hexagon(xOffset + b, yOffset, " ", var);
         b += 150;
     }
     int d = 0;
     for (int var = 5; var <= 8; ++var) {
-        hexagons_[var] = new Hexagon(xOffset + 75 + d, yOffset + verticalSpacing, ' ', var);
+        hexagons_[var] = new Hexagon(xOffset + 75 + d, yOffset + verticalSpacing, " ", var);
         d += 150;
     }
     b = 0;
     for (int var = 9; var <= 13; ++var) {
-        hexagons_[var] = new Hexagon(xOffset + b, yOffset + 2 * verticalSpacing, ' ', var);
+        hexagons_[var] = new Hexagon(xOffset + b, yOffset + 2 * verticalSpacing, " ", var);
         b += 150;
     }
     d = 0;
     for (int var = 14; var <= 17; ++var) {
-        hexagons_[var] = new Hexagon(xOffset + 75 + d, yOffset + 3 * verticalSpacing, ' ', var);
+        hexagons_[var] = new Hexagon(xOffset + 75 + d, yOffset + 3 * verticalSpacing, " ", var);
         d += 150;
     }
     b = 0;
     for (int var = 18; var <= 22; ++var) {
-        hexagons_[var] = new Hexagon(xOffset + b, yOffset + 4 * verticalSpacing, ' ', var);
+        hexagons_[var] = new Hexagon(xOffset + b, yOffset + 4 * verticalSpacing, " ", var);
         b += 150;
     }
     d = 0;
     for (int var = 23; var <= 26; ++var) {
-        hexagons_[var] = new Hexagon(xOffset + 75 + d, yOffset + 5 * verticalSpacing, ' ', var);
+        hexagons_[var] = new Hexagon(xOffset + 75 + d, yOffset + 5 * verticalSpacing, " ", var);
         d += 150;
     }
     b = 0;
     for (int var = 27; var <= 31; ++var) {
-        hexagons_[var] = new Hexagon(xOffset + b, yOffset + 6 * verticalSpacing, ' ', var);
+        hexagons_[var] = new Hexagon(xOffset + b, yOffset + 6 * verticalSpacing, " ", var);
         b += 150;
     }
     d = 0;
     for (int var = 32; var <= 35; ++var) {
-        hexagons_[var] = new Hexagon(xOffset + 75 + d, yOffset + 7 * verticalSpacing, ' ', var);
+        hexagons_[var] = new Hexagon(xOffset + 75 + d, yOffset + 7 * verticalSpacing, " ", var);
         d += 150;
     }
     b = 0;
     for (int var = 36; var <= 40; ++var) {
-        hexagons_[var] = new Hexagon(xOffset + b, yOffset + 8 * verticalSpacing, ' ', var);
+        hexagons_[var] = new Hexagon(xOffset + b, yOffset + 8 * verticalSpacing, " ", var);
         b += 150;
     }
 }
@@ -261,7 +275,6 @@ void HexGame::initializeNeighbors() {
     hexagons_[21]->setNeighbor(3, hexagons_[30]);
     hexagons_[21]->setNeighbor(4, hexagons_[26]);
     hexagons_[21]->setNeighbor(5, hexagons_[17]);
-
     hexagons_[22]->setNeighbor(0, hexagons_[13]);
     hexagons_[22]->setNeighbor(1, hexagons_[17]);
     hexagons_[22]->setNeighbor(2, hexagons_[26]);
@@ -289,7 +302,6 @@ void HexGame::initializeNeighbors() {
     hexagons_[26]->setNeighbor(2, hexagons_[30]);
     hexagons_[26]->setNeighbor(3, hexagons_[35]);
     hexagons_[26]->setNeighbor(4, hexagons_[31]);
-    hexagons_[26]->setNeighbor(5, hexagons_[22]);
     hexagons_[27]->setNeighbor(0, hexagons_[18]);
     hexagons_[27]->setNeighbor(1, hexagons_[23]);
     hexagons_[27]->setNeighbor(2, hexagons_[32]);
@@ -367,7 +379,7 @@ void HexGame::printHexagonInfo() {
     for (size_t row = 0; row < rows.size(); ++row) {
         qDebug() << "Row" << (row + 1) << ":";
         for (int hexIndex : rows[row]) {
-            QChar value = hexagons_[hexIndex]->getValue();
+            QString value = hexagons_[hexIndex]->getValue();
             QString neighbors;
             for (int i = 0; i < 6; ++i) {
                 Hexagon* neighbor = hexagons_[hexIndex]->getNeighbor(i);
@@ -407,11 +419,11 @@ Hexagon* HexGame::findNearestCell(const QPointF& pos, qreal& minDistance) {
 
 void HexGame::drawBoard() {
     QList<QGraphicsItem*> itemsToKeep;
-    for (DraggableHexagon* hex : leftHexagons) {
-        itemsToKeep << hex;
+    for (DraggableAgent* agent : leftHexagons) {
+        itemsToKeep << agent;
     }
-    for (DraggableHexagon* hex : rightHexagons) {
-        itemsToKeep << hex;
+    for (DraggableAgent* agent : rightHexagons) {
+        itemsToKeep << agent;
     }
     for (QGraphicsItem* item : scene->items()) {
         if (item->type() == QGraphicsRectItem::Type ||
@@ -424,30 +436,30 @@ void HexGame::drawBoard() {
     }
 
     for (Hexagon* hex : hexagons_) {
-        QChar value = hex->getValue();
+        QString value = hex->getValue();
         QPointF center = hex->getCenter();
         QPolygonF hexShape = createHexagon(center.x(), center.y(), 50);
         QGraphicsPolygonItem* hexItem = new QGraphicsPolygonItem(hexShape);
 
-        if (value == '1') {
+        if (value == "s1") {
             hexItem->setBrush(QColor(61, 59, 243));
-        } else if (value == '2') {
+        } else if (value == "s2") {
             hexItem->setBrush(QColor(217, 22, 86));
-        } else if (value == '#') {
+        } else if (value == "#") {
             hexItem->setBrush(QColor(240, 187, 120));
-        } else if (value == '~') {
+        } else if (value == "~") {
             hexItem->setBrush(QColor(96, 181, 255));
         } else {
             hexItem->setBrush(QColor("white"));
         }
-        hexItem->setPen(QPen(Qt::black, 5));
+        hexItem->setPen(QPen(Qt::black, 2));
         hexItem->setZValue(0);
         scene->addItem(hexItem);
     }
 
     view->show();
 }
-std::vector<Hexagon*> HexGame::bfs(Hexagon* start, QChar type) {
+std::vector<Hexagon*> HexGame::bfs(Hexagon* start, AgentType type, int mobility) {
     std::vector<Hexagon*> result;
     std::queue<std::vector<Hexagon*>> queue;
     std::set<Hexagon*> visited;
@@ -455,30 +467,110 @@ std::vector<Hexagon*> HexGame::bfs(Hexagon* start, QChar type) {
     for (int i = 0; i < 6; ++i) {
         Hexagon* neighbor = start->getNeighbor(i);
         if (neighbor && visited.find(neighbor) == visited.end()) {
-            visited.insert(neighbor);
-            std::vector<Hexagon*> initialPath = {neighbor};
-            queue.push(initialPath);
+            bool isValid = true;
+            bool canLand = true;
+            QString cellValue = neighbor->getValue();
+            if (type == AgentType::WaterWalking) {
+                if (cellValue != "~" && cellValue != " " && cellValue != "s2") {
+                    isValid = false;
+                }
+            } else if (type == AgentType::Grounded) {
+                if (cellValue != " " && cellValue != "s1") {
+                    isValid = false;
+                }
+            } else if (type == AgentType::Floating) {
+                if (cellValue == "#") {
+                    isValid = false;
+                }
+            } else if (type == AgentType::Flying) {
+                DraggableAgent* agent = nullptr;
+                for (DraggableAgent* da : leftHexagons) {
+                    if (da->getAgent()->getPosition() == start) {
+                        agent = da;
+                        break;
+                    }
+                }
+                if (!agent) {
+                    for (DraggableAgent* da : rightHexagons) {
+                        if (da->getAgent()->getPosition() == start) {
+                            agent = da;
+                            break;
+                        }
+                    }
+                }
+                if (agent && agent->getPlayer() == '1' && cellValue != " " && cellValue != "s1") {
+                    canLand = false;
+                } else if (agent && agent->getPlayer() == '2' && cellValue != " " && cellValue != "s2") {
+                    canLand = false;
+                }
+            }
+            if (isValid) {
+                visited.insert(neighbor);
+                std::vector<Hexagon*> initialPath = {neighbor};
+                if (type != AgentType::Flying || canLand) {
+                    result.push_back(neighbor);
+                }
+                queue.push(initialPath);
+            }
         }
     }
 
     while (!queue.empty()) {
         std::vector<Hexagon*> currentPath = queue.front();
         queue.pop();
-
         Hexagon* current = currentPath.back();
 
-        if (currentPath.size() >= 1 && currentPath.size() <= 3) {
-            result.insert(result.end(), currentPath.begin(), currentPath.end());
-        }
-
-        if (currentPath.size() < 1) {
+        if (currentPath.size() < static_cast<size_t>(mobility)) {
             for (int i = 0; i < 6; ++i) {
                 Hexagon* neighbor = current->getNeighbor(i);
                 if (neighbor && visited.find(neighbor) == visited.end() && neighbor != start) {
-                    visited.insert(neighbor);
-                    std::vector<Hexagon*> newPath = currentPath;
-                    newPath.push_back(neighbor);
-                    queue.push(newPath);
+                    bool isValid = true;
+                    bool canLand = true;
+                    QString cellValue = neighbor->getValue();
+                    if (type == AgentType::WaterWalking) {
+                        if (cellValue != "~" && cellValue != " " && cellValue != "s2") {
+                            isValid = false;
+                        }
+                    } else if (type == AgentType::Grounded) {
+                        if (cellValue != " " && cellValue != "s1") {
+                            isValid = false;
+                        }
+                    } else if (type == AgentType::Floating) {
+                        if (cellValue == "#") {
+                            isValid = false;
+                        }
+                    } else if (type == AgentType::Flying) {
+
+                        DraggableAgent* agent = nullptr;
+                        for (DraggableAgent* da : leftHexagons) {
+                            if (da->getAgent()->getPosition() == start) {
+                                agent = da;
+                                break;
+                            }
+                        }
+                        if (!agent) {
+                            for (DraggableAgent* da : rightHexagons) {
+                                if (da->getAgent()->getPosition() == start) {
+                                    agent = da;
+                                    break;
+                                }
+                            }
+                        }
+                        if (agent && agent->getPlayer() == '1' && cellValue != " " && cellValue != "s1") {
+                            canLand = false;
+                        } else if (agent && agent->getPlayer() == '2' && cellValue != " " && cellValue != "s2") {
+                            canLand = false;
+                        }
+                    }
+                    if (isValid) {
+                        visited.insert(neighbor);
+                        std::vector<Hexagon*> newPath = currentPath;
+                        newPath.push_back(neighbor);
+                        if (type != AgentType::Flying || canLand) {
+                            result.push_back(neighbor);
+                        }
+                        queue.push(newPath);
+                    }
                 }
             }
         }
@@ -501,7 +593,7 @@ void HexGame::highlightPath(const std::vector<Hexagon*>& path) {
         QPointF center = hex->getCenter();
         QPolygonF hexShape = createHexagon(center.x(), center.y(), 50);
         QGraphicsPolygonItem* hexItem = new QGraphicsPolygonItem(hexShape);
-        hexItem->setBrush(QColor(0, 255, 0,200));
+        hexItem->setBrush(QColor(0, 255, 0, 200));
         hexItem->setPen(QPen(Qt::black, 2));
         hexItem->setZValue(5);
         scene->addItem(hexItem);
@@ -518,5 +610,3 @@ void HexGame::clearHighlight() {
         }
     }
 }
-
-

@@ -1,4 +1,4 @@
-#include "draggablehexagon.h"
+/*#include "draggablehexagon.h"
 #include "hexgame.h"
 #include <QDebug>
 
@@ -52,3 +52,4 @@ void DraggableHexagon::mouseReleaseEvent(QGraphicsSceneMouseEvent* event) {
     setZValue(10);
     QGraphicsPolygonItem::mouseReleaseEvent(event);
     }
+*/

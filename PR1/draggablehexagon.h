@@ -1,4 +1,4 @@
-#ifndef DRAGGABLEHEXAGON_H
+/*#ifndef DRAGGABLEHEXAGON_H
 #define DRAGGABLEHEXAGON_H
 
 #include <QGraphicsPolygonItem>
@@ -25,3 +25,4 @@ private:
 };
 
 #endif // DRAGGABLEHEXAGON_H
+*/

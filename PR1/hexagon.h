@@ -3,21 +3,19 @@
 
 #include <QPolygonF>
 #include <QPointF>
-#include <QChar>
+#include <QString>
 
 class Hexagon {
 public:
-    explicit Hexagon(qreal x, qreal y, QChar value = ' ', int index = -1)
-        : value_(value),posX_(x), posY_(y), index_(index),
+    explicit Hexagon(qreal x, qreal y, QString value = " ", int index = -1)
+        : polygon_({QPointF(17.5, 0), QPointF(52.5, 0), QPointF(70, 35),
+                    QPointF(52.5, 70), QPointF(17.5, 70), QPointF(0, 35)}),
+        value_(value), posX_(x), posY_(y), index_(index),
         neighbor0_(nullptr), neighbor1_(nullptr), neighbor2_(nullptr),
-        neighbor3_(nullptr), neighbor4_(nullptr), neighbor5_(nullptr) {
-        polygon_ << QPointF(17.5, 0) << QPointF(52.5, 0)
-        << QPointF(70, 35) << QPointF(52.5, 70)
-        << QPointF(17.5, 70) << QPointF(0, 35);
-    }
+        neighbor3_(nullptr), neighbor4_(nullptr), neighbor5_(nullptr) {}
 
-    void setValue(QChar value) { value_ = value; }
-    QChar getValue() const { return value_; }
+    void setValue(const QString& value) { value_ = value; }
+    QString getValue() const { return value_; }
     QPointF getCenter() const { return QPointF(posX_ + 35, posY_ + 35); }
     QPolygonF getPolygon() const { return polygon_; }
     int getIndex() const { return index_; }
@@ -43,11 +41,9 @@ public:
 
 private:
     QPolygonF polygon_;
-
-    QChar value_;
+    QString value_;
     qreal posX_, posY_;
     int index_;
-
     Hexagon* neighbor0_;
     Hexagon* neighbor1_;
     Hexagon* neighbor2_;

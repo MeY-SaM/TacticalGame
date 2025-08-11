@@ -11,13 +11,18 @@
 #include <QGraphicsScene>
 #include <QGraphicsView>
 #include <QGraphicsPolygonItem>
-#include <QGraphicsTextItem>
+#include <QGraphicsSceneMouseEvent>
 #include <cmath>
+#include <QDebug>
+
 #include "hexagon.h"
-#include "draggablehexagon.h"
+#include "agent.h"
+
+class DraggableAgent;
 
 class HexGame : public QWidget {
     Q_OBJECT
+
 public:
     explicit HexGame(QWidget *parent = nullptr);
     ~HexGame();
@@ -26,7 +31,7 @@ public:
     Hexagon* findNearestCell(const QPointF& pos, qreal& minDistance);
     QPolygonF createHexagon(qreal x, qreal y, qreal radius) const;
     void drawBoard();
-    std::vector<Hexagon*> bfs(Hexagon* start, QChar type);
+    std::vector<Hexagon*> bfs(Hexagon* start, AgentType type, int mobility);
     void highlightPath(const std::vector<Hexagon*>& path);
     void clearHighlight();
 
@@ -38,8 +43,8 @@ private:
     std::vector<Hexagon*> hexagons_;
     QGraphicsScene* scene;
     QGraphicsView* view;
-    std::vector<DraggableHexagon*> leftHexagons;
-    std::vector<DraggableHexagon*> rightHexagons;
+    std::vector<DraggableAgent*> leftHexagons;
+    std::vector<DraggableAgent*> rightHexagons;
 };
 
 #endif // HEXGAME_H
