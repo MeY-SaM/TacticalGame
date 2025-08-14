@@ -1,6 +1,7 @@
 #include "draggableagent.h"
 #include "hexgame.h"
 #include <QDebug>
+#include <algorithm>
 
 DraggableAgent::DraggableAgent(const QPolygonF& polygon, Agent* agent, QChar player, const QPointF& originalPos, HexGame* game)
     : QGraphicsPolygonItem(polygon), agent_(agent), player_(player), originalPos_(originalPos), game_(game), isHighlighted_(false) {
@@ -20,19 +21,37 @@ DraggableAgent::~DraggableAgent() {
 
 void DraggableAgent::mousePressEvent(QGraphicsSceneMouseEvent* event) {
     if (event->button() == Qt::LeftButton) {
+        DraggableAgent* attacker = game_->getCurrentHighlightedAgent();
+        if (attacker && attacker != this && attacker->getPlayer() != player_) {
+            auto it = std::find(attacker->highlightedAttackables_.begin(), attacker->highlightedAttackables_.end(), this);
+            if (it != attacker->highlightedAttackables_.end()) {
+                game_->performAttack(attacker, this);
+                attacker->setHighlighted(false);
+                attacker->clearHighlightedPath();
+                attacker->clearHighlightedAttackables();
+                game_->clearHighlight();
+                game_->setCurrentHighlightedAgent(nullptr);
+                return;
+            }
+        }
+
         setZValue(20);
         qreal minDistance;
         Hexagon* nearestCell = game_->findNearestCell(pos() + boundingRect().center(), minDistance);
         if (nearestCell && minDistance < 100) {
             if (!isHighlighted_) {
-                std::vector<Hexagon*> path = game_->bfs(nearestCell, agent_->getAgentType(), agent_->getMobility());
-                game_->highlightPath(path);
+                auto [path, attackableEnemies] = game_->bfs(nearestCell, agent_->getAgentType(), agent_->getMobility(), agent_->getAttackRange());
+                game_->highlightPath(path, attackableEnemies);
                 isHighlighted_ = true;
                 highlightedPath_ = path;
+                highlightedAttackables_ = attackableEnemies;
+                game_->setCurrentHighlightedAgent(this);
             } else {
                 game_->clearHighlight();
                 isHighlighted_ = false;
                 highlightedPath_.clear();
+                highlightedAttackables_.clear();
+                game_->setCurrentHighlightedAgent(nullptr);
             }
         }
     }
@@ -88,6 +107,11 @@ void DraggableAgent::mouseReleaseEvent(QGraphicsSceneMouseEvent* event) {
             originalPos_ = nearestCell->getCenter();
             agent_->setPosition(nearestCell);
             game_->drawBoard();
+            game_->clearHighlight();
+            isHighlighted_ = false;
+            highlightedPath_.clear();
+            highlightedAttackables_.clear();
+            game_->setCurrentHighlightedAgent(nullptr);
         } else {
             setPos(originalPos_ - boundingRect().center());
         }
@@ -95,8 +119,5 @@ void DraggableAgent::mouseReleaseEvent(QGraphicsSceneMouseEvent* event) {
         setPos(originalPos_ - boundingRect().center());
     }
     setZValue(10);
-    game_->clearHighlight();
-    isHighlighted_ = false;
-    highlightedPath_.clear();
     QGraphicsPolygonItem::mouseReleaseEvent(event);
 }

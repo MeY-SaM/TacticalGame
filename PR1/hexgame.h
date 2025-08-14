@@ -31,9 +31,12 @@ public:
     Hexagon* findNearestCell(const QPointF& pos, qreal& minDistance);
     QPolygonF createHexagon(qreal x, qreal y, qreal radius) const;
     void drawBoard();
-    std::vector<Hexagon*> bfs(Hexagon* start, AgentType type, int mobility);
-    void highlightPath(const std::vector<Hexagon*>& path);
+    std::pair<std::vector<Hexagon*>, std::vector<DraggableAgent*>> bfs(Hexagon* start, AgentType type, int mobility, int attackRange);
+    void highlightPath(const std::vector<Hexagon*>& path, const std::vector<DraggableAgent*>& attackableEnemies = {});
     void clearHighlight();
+    void setCurrentHighlightedAgent(DraggableAgent* agent);
+    DraggableAgent* getCurrentHighlightedAgent() const;
+    void performAttack(DraggableAgent* attacker, DraggableAgent* defender);
 
 private:
     void loadGrid(const QString &filename);
@@ -45,6 +48,7 @@ private:
     QGraphicsView* view;
     std::vector<DraggableAgent*> leftHexagons;
     std::vector<DraggableAgent*> rightHexagons;
+    DraggableAgent* currentHighlightedAgent = nullptr;
 };
 
 #endif // HEXGAME_H

@@ -16,6 +16,10 @@ public:
 
     Agent* getAgent() const { return agent_; }
     QChar getPlayer() const { return player_; }
+    void setOriginalPos(const QPointF& pos) { originalPos_ = pos; }
+    void setHighlighted(bool highlighted) { isHighlighted_ = highlighted; }
+    void clearHighlightedPath() { highlightedPath_.clear(); }
+    void clearHighlightedAttackables() { highlightedAttackables_.clear(); }
 
 protected:
     void mousePressEvent(QGraphicsSceneMouseEvent* event) override;
@@ -29,6 +33,7 @@ private:
     HexGame* game_;
     bool isHighlighted_;
     std::vector<Hexagon*> highlightedPath_;
+    std::vector<DraggableAgent*> highlightedAttackables_;
 };
 
 class DraggableWaterWalking : public DraggableAgent {

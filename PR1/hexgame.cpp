@@ -8,8 +8,8 @@
 #include <QLabel>
 #include <queue>
 #include <set>
-#include <string>
-#include <memory>
+#include <algorithm>
+#include <random>
 
 HexGame::HexGame(QWidget *parent) : QWidget(parent) {
     setFixedSize(1184, 800);
@@ -25,7 +25,7 @@ HexGame::HexGame(QWidget *parent) : QWidget(parent) {
     QPixmap background(":/BoardImage.png");
     if (!background.isNull()) {
         QPixmap scaledBackground = background.scaled(background.width(), 800, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
-        QGraphicsPixmapItem *backgroundItem = new QGraphicsPixmapItem(scaledBackground);
+        QGraphicsPolygonItem *backgroundItem = new QGraphicsPolygonItem(createHexagon(0, 0, 0));
         backgroundItem->setZValue(-1);
         scene->addItem(backgroundItem);
     } else {
@@ -43,26 +43,40 @@ HexGame::HexGame(QWidget *parent) : QWidget(parent) {
 
     loadGrid(":/new/prefix1/grid4.txt");
     leftHexagons.resize(8);
-    std::vector<std::pair<QString, int>> leftTypes = {
-        {"Alpha", 1}, {"Beta", 2}, {"Gamma", 2}, {"Delta", 2},
-        {"Epsilon", 2}, {"Zeta", 2}, {"Eta", 3}, {"Theta", 4}
+    std::vector<std::tuple<QString, int, int, int, int, AgentType>> leftTypes = {
+        {"Alpha", 320, 1, 90, 1, AgentType::Flying},
+        {"Beta", 320, 2, 90, 1, AgentType::Flying},
+        {"Gamma", 320, 2, 90, 1, AgentType::Flying},
+        {"Delta", 320, 2, 90, 1, AgentType::Flying},
+        {"Epsilon", 320, 2, 90, 1, AgentType::Flying},
+        {"Zeta", 320, 2, 90, 1, AgentType::Flying},
+        {"Eta", 320, 3, 90, 1, AgentType::Flying},
+        {"Theta", 320, 4, 90, 1, AgentType::Flying}
     };
     for (size_t i = 0; i < 8; ++i) {
         float y = 50 + i * 100;
         QPolygonF hexShape = createHexagon(75, y, 50);
-        Agent* agent = new Flying(leftTypes[i].first, 320, leftTypes[i].second, 90, 1);
+        auto [name, hp, mobility, damage, attackRange, type] = leftTypes[i];
+        Agent* agent = new Flying(name, hp, mobility, damage, attackRange);
         leftHexagons[i] = new DraggableAgent(hexShape, agent, '1', QPointF(75, y), this);
         scene->addItem(leftHexagons[i]);
     }
     rightHexagons.resize(8);
-    std::vector<std::pair<QString, int>> rightTypes = {
-        {"Rekton", 1}, {"Xerath", 2}, {"Angus", 2}, {"Duraham", 2},
-        {"ColonelBaba", 2}, {"Medusa", 2}, {"Bunka", 3}, {"Sanka", 4}
+    std::vector<std::tuple<QString, int, int, int, int>> rightTypes = {
+        {"Rekton", 320, 1, 90, 3},
+        {"Xerath", 320, 2, 80, 2},
+        {"Angus", 400, 2, 100, 1},
+        {"Duraham", 320, 2, 100, 2},
+        {"ColonelBaba", 400, 2, 100, 1},
+        {"Medusa", 320, 2, 90, 2},
+        {"Bunka", 320, 3, 100, 1},
+        {"Sanka", 320, 3, 100, 1}
     };
     for (size_t i = 0; i < 8; ++i) {
         float y = 50 + i * 100;
         QPolygonF hexShape = createHexagon(1109, y, 50);
-        Agent* agent = new WaterWalking(rightTypes[i].first, 320, rightTypes[i].second, 90, 1);
+        auto [name, hp, mobility, damage, attackRange] = rightTypes[i];
+        Agent* agent = new WaterWalking(name, hp, mobility, damage, attackRange);
         rightHexagons[i] = new DraggableWaterWalking(hexShape, dynamic_cast<WaterWalking*>(agent), '2', QPointF(1109, y), this);
         scene->addItem(rightHexagons[i]);
     }
@@ -347,7 +361,6 @@ void HexGame::initializeNeighbors() {
     hexagons_[35]->setNeighbor(1, hexagons_[30]);
     hexagons_[35]->setNeighbor(2, hexagons_[39]);
     hexagons_[35]->setNeighbor(3, hexagons_[40]);
-    hexagons_[35]->setNeighbor(4, hexagons_[31]);
     hexagons_[36]->setNeighbor(0, hexagons_[27]);
     hexagons_[36]->setNeighbor(1, hexagons_[32]);
     hexagons_[37]->setNeighbor(0, hexagons_[32]);
@@ -364,31 +377,16 @@ void HexGame::initializeNeighbors() {
 }
 
 void HexGame::printHexagonInfo() {
-    std::vector<std::vector<int>> rows = {
-        {0, 1, 2, 3, 4},
-        {5, 6, 7, 8},
-        {9, 10, 11, 12, 13},
-        {14, 15, 16, 17},
-        {18, 19, 20, 21, 22},
-        {23, 24, 25, 26},
-        {27, 28, 29, 30, 31},
-        {32, 33, 34, 35},
-        {36, 37, 38, 39, 40}
-    };
-
-    for (size_t row = 0; row < rows.size(); ++row) {
-        qDebug() << "Row" << (row + 1) << ":";
-        for (int hexIndex : rows[row]) {
-            QString value = hexagons_[hexIndex]->getValue();
-            QString neighbors;
-            for (int i = 0; i < 6; ++i) {
-                Hexagon* neighbor = hexagons_[hexIndex]->getNeighbor(i);
-                if (neighbor) {
-                    neighbors += QString("(%1: %2) ").arg(neighbor->getIndex()).arg(neighbor->getValue());
-                }
+    for (size_t i = 0; i < hexagons_.size(); ++i) {
+        QString value = hexagons_[i]->getValue();
+        QString neighbors;
+        for (int j = 0; j < 6; ++j) {
+            Hexagon* neighbor = hexagons_[i]->getNeighbor(j);
+            if (neighbor) {
+                neighbors += QString("(%1: %2) ").arg(neighbor->getIndex()).arg(neighbor->getValue());
             }
-            qDebug().noquote() << QString("Hex %1: Value = %2, Neighbors = %3").arg(hexIndex).arg(value).arg(neighbors);
         }
+        qDebug().noquote() << QString("Hex %1: Value = %2, Neighbors = %3").arg(i).arg(value).arg(neighbors);
     }
 }
 
@@ -459,135 +457,172 @@ void HexGame::drawBoard() {
 
     view->show();
 }
-std::vector<Hexagon*> HexGame::bfs(Hexagon* start, AgentType type, int mobility) {
-    std::vector<Hexagon*> result;
-    std::queue<std::vector<Hexagon*>> queue;
+
+std::pair<std::vector<Hexagon*>, std::vector<DraggableAgent*>> HexGame::bfs(Hexagon* start, AgentType type, int mobility, int attackRange) {
+    std::vector<Hexagon*> moveResult;
+    std::vector<DraggableAgent*> attackableEnemies;
+    std::queue<std::pair<Hexagon*, int>> queue;
     std::set<Hexagon*> visited;
+
+    DraggableAgent* currentAgent = nullptr;
+    for (DraggableAgent* da : leftHexagons) {
+        if (da->getAgent()->getPosition() == start) {
+            currentAgent = da;
+            break;
+        }
+    }
+    if (!currentAgent) {
+        for (DraggableAgent* da : rightHexagons) {
+            if (da->getAgent()->getPosition() == start) {
+                currentAgent = da;
+                break;
+            }
+        }
+    }
+    if (!currentAgent) {
+        return {moveResult, attackableEnemies};
+    }
+    QChar currentPlayer = currentAgent->getPlayer();
 
     for (int i = 0; i < 6; ++i) {
         Hexagon* neighbor = start->getNeighbor(i);
         if (neighbor && visited.find(neighbor) == visited.end()) {
-            bool isValid = true;
+            bool isValidMove = true;
             bool canLand = true;
             QString cellValue = neighbor->getValue();
+
             if (type == AgentType::WaterWalking) {
                 if (cellValue != "~" && cellValue != " " && cellValue != "s2") {
-                    isValid = false;
+                    isValidMove = false;
                 }
             } else if (type == AgentType::Grounded) {
                 if (cellValue != " " && cellValue != "s1") {
-                    isValid = false;
+                    isValidMove = false;
                 }
             } else if (type == AgentType::Floating) {
                 if (cellValue == "#") {
-                    isValid = false;
+                    isValidMove = false;
                 }
             } else if (type == AgentType::Flying) {
-                DraggableAgent* agent = nullptr;
-                for (DraggableAgent* da : leftHexagons) {
-                    if (da->getAgent()->getPosition() == start) {
-                        agent = da;
-                        break;
-                    }
-                }
-                if (!agent) {
-                    for (DraggableAgent* da : rightHexagons) {
-                        if (da->getAgent()->getPosition() == start) {
-                            agent = da;
-                            break;
-                        }
-                    }
-                }
-                if (agent && agent->getPlayer() == '1' && cellValue != " " && cellValue != "s1") {
+                if (currentPlayer == '1' && cellValue != " " && cellValue != "s1") {
                     canLand = false;
-                } else if (agent && agent->getPlayer() == '2' && cellValue != " " && cellValue != "s2") {
+                } else if (currentPlayer == '2' && cellValue != " " && cellValue != "s2") {
                     canLand = false;
                 }
             }
-            if (isValid) {
-                visited.insert(neighbor);
-                std::vector<Hexagon*> initialPath = {neighbor};
-                if (type != AgentType::Flying || canLand) {
-                    result.push_back(neighbor);
+
+            bool isOccupied = false;
+            for (DraggableAgent* da : leftHexagons) {
+                if (da->getAgent()->getPosition() == neighbor) {
+                    isOccupied = true;
+                    if (da->getPlayer() != currentPlayer && attackRange >= 1) {
+                        attackableEnemies.push_back(da);
+                    }
                 }
-                queue.push(initialPath);
+            }
+            for (DraggableAgent* da : rightHexagons) {
+                if (da->getAgent()->getPosition() == neighbor) {
+                    isOccupied = true;
+                    if (da->getPlayer() != currentPlayer && attackRange >= 1) {
+                        attackableEnemies.push_back(da);
+                    }
+                }
+            }
+
+            if (isValidMove && !isOccupied) {
+                visited.insert(neighbor);
+                queue.push({neighbor, 1});
+                if (type != AgentType::Flying || canLand) {
+                    moveResult.push_back(neighbor);
+                }
             }
         }
     }
 
     while (!queue.empty()) {
-        std::vector<Hexagon*> currentPath = queue.front();
+        auto [current, distance] = queue.front();
         queue.pop();
-        Hexagon* current = currentPath.back();
 
-        if (currentPath.size() < static_cast<size_t>(mobility)) {
+        if (distance < std::max(mobility, attackRange)) {
             for (int i = 0; i < 6; ++i) {
                 Hexagon* neighbor = current->getNeighbor(i);
                 if (neighbor && visited.find(neighbor) == visited.end() && neighbor != start) {
-                    bool isValid = true;
+                    bool isValidMove = true;
                     bool canLand = true;
                     QString cellValue = neighbor->getValue();
+
                     if (type == AgentType::WaterWalking) {
                         if (cellValue != "~" && cellValue != " " && cellValue != "s2") {
-                            isValid = false;
+                            isValidMove = false;
                         }
                     } else if (type == AgentType::Grounded) {
                         if (cellValue != " " && cellValue != "s1") {
-                            isValid = false;
+                            isValidMove = false;
                         }
                     } else if (type == AgentType::Floating) {
                         if (cellValue == "#") {
-                            isValid = false;
+                            isValidMove = false;
                         }
                     } else if (type == AgentType::Flying) {
-
-                        DraggableAgent* agent = nullptr;
-                        for (DraggableAgent* da : leftHexagons) {
-                            if (da->getAgent()->getPosition() == start) {
-                                agent = da;
-                                break;
-                            }
-                        }
-                        if (!agent) {
-                            for (DraggableAgent* da : rightHexagons) {
-                                if (da->getAgent()->getPosition() == start) {
-                                    agent = da;
-                                    break;
-                                }
-                            }
-                        }
-                        if (agent && agent->getPlayer() == '1' && cellValue != " " && cellValue != "s1") {
+                        if (currentPlayer == '1' && cellValue != " " && cellValue != "s1") {
                             canLand = false;
-                        } else if (agent && agent->getPlayer() == '2' && cellValue != " " && cellValue != "s2") {
+                        } else if (currentPlayer == '2' && cellValue != " " && cellValue != "s2") {
                             canLand = false;
                         }
                     }
-                    if (isValid) {
-                        visited.insert(neighbor);
-                        std::vector<Hexagon*> newPath = currentPath;
-                        newPath.push_back(neighbor);
-                        if (type != AgentType::Flying || canLand) {
-                            result.push_back(neighbor);
+
+                    bool isOccupied = false;
+                    for (DraggableAgent* da : leftHexagons) {
+                        if (da->getAgent()->getPosition() == neighbor) {
+                            isOccupied = true;
+                            if (da->getPlayer() != currentPlayer && distance + 1 <= attackRange) {
+                                attackableEnemies.push_back(da);
+                            }
                         }
-                        queue.push(newPath);
+                    }
+                    for (DraggableAgent* da : rightHexagons) {
+                        if (da->getAgent()->getPosition() == neighbor) {
+                            isOccupied = true;
+                            if (da->getPlayer() != currentPlayer && distance + 1 <= attackRange) {
+                                attackableEnemies.push_back(da);
+                            }
+                        }
+                    }
+
+                    if (isValidMove && !isOccupied) {
+                        visited.insert(neighbor);
+                        queue.push({neighbor, distance + 1});
+                        if ((distance + 1 <= mobility) && (type != AgentType::Flying || canLand)) {
+                            moveResult.push_back(neighbor);
+                        }
                     }
                 }
             }
         }
     }
 
-    std::vector<Hexagon*> uniqueResult;
+    std::vector<Hexagon*> uniqueMoveResult;
     std::set<Hexagon*> seen;
-    for (Hexagon* hex : result) {
+    for (Hexagon* hex : moveResult) {
         if (seen.find(hex) == seen.end()) {
             seen.insert(hex);
-            uniqueResult.push_back(hex);
+            uniqueMoveResult.push_back(hex);
         }
     }
 
-    return uniqueResult;
+    std::vector<DraggableAgent*> uniqueAttackableEnemies;
+    std::set<DraggableAgent*> seenAgents;
+    for (DraggableAgent* agent : attackableEnemies) {
+        if (seenAgents.find(agent) == seenAgents.end()) {
+            seenAgents.insert(agent);
+            uniqueAttackableEnemies.push_back(agent);
+        }
+    }
+
+    return {uniqueMoveResult, uniqueAttackableEnemies};
 }
-void HexGame::highlightPath(const std::vector<Hexagon*>& path) {
+
+void HexGame::highlightPath(const std::vector<Hexagon*>& path, const std::vector<DraggableAgent*>& attackableEnemies) {
     clearHighlight();
     for (Hexagon* hex : path) {
         QPointF center = hex->getCenter();
@@ -598,15 +633,121 @@ void HexGame::highlightPath(const std::vector<Hexagon*>& path) {
         hexItem->setZValue(5);
         scene->addItem(hexItem);
     }
+    for (DraggableAgent* enemy : attackableEnemies) {
+        QPolygonF enemyShape = enemy->polygon();
+        QGraphicsPolygonItem* enemyItem = new QGraphicsPolygonItem(enemyShape);
+        enemyItem->setPos(enemy->pos());
+        enemyItem->setBrush(QColor(255, 0, 0, 200));
+        enemyItem->setPen(QPen(Qt::black, 2));
+        enemyItem->setZValue(15);
+        scene->addItem(enemyItem);
+    }
     view->update();
 }
 
 void HexGame::clearHighlight() {
     for (QGraphicsItem* item : scene->items()) {
         if (item->type() == QGraphicsPolygonItem::Type &&
-            item->zValue() == 5) {
+            (item->zValue() == 5 || item->zValue() == 15)) {
             scene->removeItem(item);
             delete item;
         }
     }
+}
+
+void HexGame::setCurrentHighlightedAgent(DraggableAgent* agent) {
+    currentHighlightedAgent = agent;
+}
+
+DraggableAgent* HexGame::getCurrentHighlightedAgent() const {
+    return currentHighlightedAgent;
+}
+
+void HexGame::performAttack(DraggableAgent* attacker, DraggableAgent* defender) {
+    int damage = attacker->getAgent()->getDamage();
+    defender->getAgent()->setHP(defender->getAgent()->getHP() - damage);
+    qDebug() << attacker->getAgent()->getName() << " attacks " << defender->getAgent()->getName() << " for " << damage << " damage.";
+
+    if (defender->getAgent()->getHP() <= 0) {
+        qDebug() << defender->getAgent()->getName() << " is defeated!";
+        scene->removeItem(defender);
+        if (defender->getPlayer() == '1') {
+            leftHexagons.erase(std::remove(leftHexagons.begin(), leftHexagons.end(), defender), leftHexagons.end());
+        } else {
+            rightHexagons.erase(std::remove(rightHexagons.begin(), rightHexagons.end(), defender), rightHexagons.end());
+        }
+        delete defender;
+        defender = nullptr;
+    }
+
+    if (defender) {
+        int counterDamage = defender->getAgent()->getDamage() / 2;
+        attacker->getAgent()->setHP(attacker->getAgent()->getHP() - counterDamage);
+        qDebug() << defender->getAgent()->getName() << " counters " << attacker->getAgent()->getName() << " for " << counterDamage << " damage.";
+
+        if (attacker->getAgent()->getHP() <= 0) {
+            qDebug() << attacker->getAgent()->getName() << " is defeated!";
+            scene->removeItem(attacker);
+            if (attacker->getPlayer() == '1') {
+                leftHexagons.erase(std::remove(leftHexagons.begin(), leftHexagons.end(), attacker), leftHexagons.end());
+            } else {
+                rightHexagons.erase(std::remove(rightHexagons.begin(), rightHexagons.end(), attacker), rightHexagons.end());
+            }
+            delete attacker;
+            clearHighlight();
+            setCurrentHighlightedAgent(nullptr);
+            drawBoard();
+            return;
+        }
+    }
+
+    if (defender) {
+        Hexagon* defPos = defender->getAgent()->getPosition();
+        std::vector<Hexagon*> freeNeighbors;
+        for (int i = 0; i < 6; ++i) {
+            Hexagon* neigh = defPos->getNeighbor(i);
+            if (neigh) {
+                QString val = neigh->getValue();
+                bool valid = true;
+                AgentType type = attacker->getAgent()->getAgentType();
+
+                if (type == AgentType::WaterWalking) {
+                    if (val != "~" && val != " " && val != "s2") valid = false;
+                } else if (type == AgentType::Grounded) {
+                    if (val != " " && val != "s1") valid = false;
+                } else if (type == AgentType::Floating) {
+                    if (val == "#") valid = false;
+                } else if (type == AgentType::Flying) {
+                    if (attacker->getPlayer() == '1' && val != " " && val != "s1") valid = false;
+                    else if (attacker->getPlayer() == '2' && val != " " && val != "s2") valid = false;
+                }
+
+                bool occupied = false;
+                for (auto da : leftHexagons) {
+                    if (da->getAgent()->getPosition() == neigh) occupied = true;
+                }
+                for (auto da : rightHexagons) {
+                    if (da->getAgent()->getPosition() == neigh) occupied = true;
+                }
+
+                if (valid && !occupied) freeNeighbors.push_back(neigh);
+            }
+        }
+
+        if (!freeNeighbors.empty()) {
+            std::random_device rd;
+            std::mt19937 gen(rd());
+            std::uniform_int_distribution<> dis(0, freeNeighbors.size() - 1);
+            int randIndex = dis(gen);
+            Hexagon* newPos = freeNeighbors[randIndex];
+            attacker->setPos(newPos->getCenter() - attacker->boundingRect().center());
+            attacker->setOriginalPos(newPos->getCenter());
+            attacker->getAgent()->setPosition(newPos);
+            qDebug() << attacker->getAgent()->getName() << " moved to a random valid neighbor of " << defender->getAgent()->getName();
+        } else {
+            qDebug() << "No valid free neighbors for " << attacker->getAgent()->getName() << " to move to.";
+        }
+    }
+
+    drawBoard();
 }

@@ -1,11 +1,14 @@
+
 #ifndef AGENT_H
 #define AGENT_H
 
 #include <QDebug>
 #include <QString>
+#include <vector>
 
 class HexGame;
 class Hexagon;
+class DraggableAgent;
 
 enum class AgentType {
     WaterWalking,
