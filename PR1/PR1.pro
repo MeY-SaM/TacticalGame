@@ -10,6 +10,7 @@ CONFIG += c++17
 
 SOURCES += \
     agent.cpp \
+    boardimagepaths.cpp \
     draggableagent.cpp \
     draggablehexagon.cpp \
     hexgame.cpp \
@@ -23,6 +24,7 @@ SOURCES += \
 HEADERS += \
     CharacterDialog.h \
     agent.h \
+    boardimagepaths.h \
     draggableagent.h \
     draggablehexagon.h \
     hexagon.h \
@@ -47,6 +49,7 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 RESOURCES += \
     Agent.qrc \
+    Agentboard.qrc \
     bp.qrc \
     page.qrc \
     page1.qrc \

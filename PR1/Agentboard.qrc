@@ -1,0 +1,28 @@
+<RCC>
+    <qresource prefix="/new/prefix1">
+        <file>angus1.png</file>
+        <file>billy1.png</file>
+        <file>boi1.png</file>
+        <file>bunke1.png</file>
+        <file>colonelbaba1.png</file>
+        <file>death1.png</file>
+        <file>duraham1.png</file>
+        <file>eloi1.png</file>
+        <file>elsa1.png</file>
+        <file>frost1.png</file>
+        <file>kabu1.png</file>
+        <file>kanar1.png</file>
+        <file>karissa1.png</file>
+        <file>khan1.png</file>
+        <file>medusa1.png</file>
+        <file>rajakal1.png</file>
+        <file>rambu1.png</file>
+        <file>reketon1.png</file>
+        <file>sabrina1.png</file>
+        <file>salih1.png</file>
+        <file>sanka1.png</file>
+        <file>sirlamorak1.png</file>
+        <file>sirphilip1.png</file>
+        <file>tusk1.png</file>
+    </qresource>
+</RCC>
