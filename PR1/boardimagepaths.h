@@ -1,10 +1,8 @@
 #ifndef BOARDIMAGEPATHS_H
 #define BOARDIMAGEPATHS_H
 
-class boardimagepaths
-{
-public:
-    boardimagepaths();
-};
+#include <QString>
+
+extern QString boardImagePaths[];
 
 #endif // BOARDIMAGEPATHS_H

@@ -1,5 +1,7 @@
 #include "hexgame.h"
 #include "draggableagent.h"
+#include "agent.h"
+#include "boardimagepaths.h"
 #include <QApplication>
 #include <QDebug>
 #include <cmath>
@@ -11,9 +13,46 @@
 #include <algorithm>
 #include <random>
 
+AgentInfo agentInfos[24] = {
+    {"Angus", 400, 2, 100, 1, AgentType::WaterWalking},
+    {"Billy", 320, 3, 90, 1, AgentType::WaterWalking},
+    {"Bunka", 320, 3, 100, 1, AgentType::WaterWalking},
+    {"ColonelBaba", 400, 2, 100, 1, AgentType::WaterWalking},
+    {"Duraham", 320, 2, 100, 2, AgentType::WaterWalking},
+    {"Medusa", 320, 2, 90, 2, AgentType::WaterWalking},
+    {"Reketon", 320, 2, 80, 2, AgentType::WaterWalking},
+    {"Sanka", 320, 3, 100, 1, AgentType::WaterWalking},
+    {"Boi", 400, 2, 100, 1, AgentType::Grounded},
+    {"Eloi", 240, 2, 100, 3, AgentType::Grounded},
+    {"Elsa", 320, 2, 140, 2, AgentType::Grounded},
+    {"Frost", 260, 2, 80, 2, AgentType::Grounded},
+    {"Kabu", 400, 2, 120, 1, AgentType::Grounded},
+    {"Kanar", 160, 2, 100, 2, AgentType::Grounded},
+    {"Karissa", 280, 2, 80, 2, AgentType::Grounded},
+    {"Khan", 320, 2, 90, 1, AgentType::Grounded},
+    {"Rajakal", 320, 2, 130, 1, AgentType::Grounded},
+    {"Salih", 400, 2, 80, 1, AgentType::Grounded},
+    {"SirLamorak", 320, 3, 110, 1, AgentType::Grounded},
+    {"SirPhilip", 400, 2, 100, 1, AgentType::Grounded},
+    {"Tusk", 400, 2, 100, 1, AgentType::Grounded},
+    {"Rambu", 320, 3, 120, 1, AgentType::Flying},
+    {"Sabrina", 320, 3, 100, 1, AgentType::Floating},
+    {"Death", 240, 3, 120, 2, AgentType::Floating}
+};
+
 HexGame::HexGame(QWidget *parent) : QWidget(parent) {
     setFixedSize(1184, 800);
+    scene = new QGraphicsScene(this);
+    view = new QGraphicsView(scene, this);
+    view->setRenderHint(QPainter::Antialiasing);
+    view->setFixedSize(1184, 800);
+    scene->setSceneRect(0, 0, 1184, 800);
+    view->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    view->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+}
 
+HexGame::HexGame(const std::vector<int>& leftIndices, const std::vector<int>& rightIndices, QWidget *parent) : QWidget(parent) {
+    setFixedSize(1184, 800);
     scene = new QGraphicsScene(this);
     view = new QGraphicsView(scene, this);
     view->setRenderHint(QPainter::Antialiasing);
@@ -38,51 +77,82 @@ HexGame::HexGame(QWidget *parent) : QWidget(parent) {
     const int hexCount = 41;
     hexagons_.resize(hexCount);
     setupHexagons();
-
     initializeNeighbors();
-
     loadGrid(":/new/prefix1/grid4.txt");
+
     leftHexagons.resize(8);
-    std::vector<std::tuple<QString, int, int, int, int, AgentType>> leftTypes = {
-        {"Alpha", 320, 1, 90, 1, AgentType::Flying},
-        {"Beta", 320, 2, 90, 1, AgentType::Flying},
-        {"Gamma", 320, 2, 90, 1, AgentType::Flying},
-        {"Delta", 320, 2, 90, 1, AgentType::Flying},
-        {"Epsilon", 320, 2, 90, 1, AgentType::Flying},
-        {"Zeta", 320, 2, 90, 1, AgentType::Flying},
-        {"Eta", 320, 3, 90, 1, AgentType::Flying},
-        {"Theta", 320, 4, 90, 1, AgentType::Flying}
-    };
     for (size_t i = 0; i < 8; ++i) {
+        int idx = leftIndices[i];
+        AgentInfo info = agentInfos[idx];
+        QString imagePath = boardImagePaths[idx];
+        Agent* agent = nullptr;
+        DraggableAgent* draggable = nullptr;
         float y = 50 + i * 100;
         QPolygonF hexShape = createHexagon(75, y, 50);
-        auto [name, hp, mobility, damage, attackRange, type] = leftTypes[i];
-        Agent* agent = new Flying(name, hp, mobility, damage, attackRange);
-        leftHexagons[i] = new DraggableAgent(hexShape, agent, '1', QPointF(75, y), this);
-        scene->addItem(leftHexagons[i]);
+        QPointF originalPos = QPointF(75, y);
+        switch (info.type) {
+        case AgentType::WaterWalking:
+            agent = new WaterWalking(info.name, info.hp, info.mobility, info.damage, info.attackRange);
+            draggable = new DraggableWaterWalking(hexShape, dynamic_cast<WaterWalking*>(agent), '1', originalPos, this, imagePath);
+            break;
+        case AgentType::Grounded:
+            agent = new Grounded(info.name, info.hp, info.mobility, info.damage, info.attackRange);
+            draggable = new DraggableGrounded(hexShape, dynamic_cast<Grounded*>(agent), '1', originalPos, this, imagePath);
+            break;
+        case AgentType::Flying:
+            agent = new Flying(info.name, info.hp, info.mobility, info.damage, info.attackRange);
+            draggable = new DraggableFlying(hexShape, dynamic_cast<Flying*>(agent), '1', originalPos, this, imagePath);
+            break;
+        case AgentType::Floating:
+            agent = new Floating(info.name, info.hp, info.mobility, info.damage, info.attackRange);
+            draggable = new DraggableFloating(hexShape, dynamic_cast<Floating*>(agent), '1', originalPos, this, imagePath);
+            break;
+        }
+        leftHexagons[i] = draggable;
+        scene->addItem(draggable);
     }
+    qDebug() << "Left Hexagons Agents:";
+    for (const auto* agent : leftHexagons) {
+        qDebug() << agent->getAgent()->getName() << static_cast<int>(agent->getAgent()->getAgentType());
+    }
+
     rightHexagons.resize(8);
-    std::vector<std::tuple<QString, int, int, int, int>> rightTypes = {
-        {"Rekton", 320, 1, 90, 3},
-        {"Xerath", 320, 2, 80, 2},
-        {"Angus", 400, 2, 100, 1},
-        {"Duraham", 320, 2, 100, 2},
-        {"ColonelBaba", 400, 2, 100, 1},
-        {"Medusa", 320, 2, 90, 2},
-        {"Bunka", 320, 3, 100, 1},
-        {"Sanka", 320, 3, 100, 1}
-    };
     for (size_t i = 0; i < 8; ++i) {
+        int idx = rightIndices[i];
+        AgentInfo info = agentInfos[idx];
+        QString imagePath = boardImagePaths[idx];
+        Agent* agent = nullptr;
+        DraggableAgent* draggable = nullptr;
         float y = 50 + i * 100;
         QPolygonF hexShape = createHexagon(1109, y, 50);
-        auto [name, hp, mobility, damage, attackRange] = rightTypes[i];
-        Agent* agent = new WaterWalking(name, hp, mobility, damage, attackRange);
-        rightHexagons[i] = new DraggableWaterWalking(hexShape, dynamic_cast<WaterWalking*>(agent), '2', QPointF(1109, y), this);
-        scene->addItem(rightHexagons[i]);
+        QPointF originalPos = QPointF(1109, y);
+        switch (info.type) {
+        case AgentType::WaterWalking:
+            agent = new WaterWalking(info.name, info.hp, info.mobility, info.damage, info.attackRange);
+            draggable = new DraggableWaterWalking(hexShape, dynamic_cast<WaterWalking*>(agent), '2', originalPos, this, imagePath);
+            break;
+        case AgentType::Grounded:
+            agent = new Grounded(info.name, info.hp, info.mobility, info.damage, info.attackRange);
+            draggable = new DraggableGrounded(hexShape, dynamic_cast<Grounded*>(agent), '2', originalPos, this, imagePath);
+            break;
+        case AgentType::Flying:
+            agent = new Flying(info.name, info.hp, info.mobility, info.damage, info.attackRange);
+            draggable = new DraggableFlying(hexShape, dynamic_cast<Flying*>(agent), '2', originalPos, this, imagePath);
+            break;
+        case AgentType::Floating:
+            agent = new Floating(info.name, info.hp, info.mobility, info.damage, info.attackRange);
+            draggable = new DraggableFloating(hexShape, dynamic_cast<Floating*>(agent), '2', originalPos, this, imagePath);
+            break;
+        }
+        rightHexagons[i] = draggable;
+        scene->addItem(draggable);
+    }
+    qDebug() << "Right Hexagons Agents:";
+    for (const auto* agent : rightHexagons) {
+        qDebug() << agent->getAgent()->getName() << static_cast<int>(agent->getAgent()->getAgentType());
     }
 
     drawBoard();
-
     printHexagonInfo();
 }
 
@@ -98,6 +168,30 @@ HexGame::~HexGame() {
     }
     delete scene;
     delete view;
+}
+
+void HexGame::highlightAgentPosition(DraggableAgent* agent) {
+    clearHighlight();
+    QPolygonF agentShape = agent->polygon();
+    QGraphicsPolygonItem* highlightItem = new QGraphicsPolygonItem(agentShape);
+    highlightItem->setPos(agent->pos());
+    highlightItem->setBrush(QColor(0, 255, 0, 200));
+    highlightItem->setPen(QPen(Qt::black, 2));
+    highlightItem->setZValue(5);
+    scene->addItem(highlightItem);
+    view->update();
+    isAgentHighlighted = true;
+}
+
+void HexGame::toggleAgentHighlight(DraggableAgent* agent) {
+    if (currentHighlightedAgent == agent && isAgentHighlighted) {
+        clearHighlight();
+        setCurrentHighlightedAgent(nullptr);
+        isAgentHighlighted = false;
+    } else {
+        highlightAgentPosition(agent);
+        setCurrentHighlightedAgent(agent);
+    }
 }
 
 void HexGame::loadGrid(const QString &filename) {
@@ -266,7 +360,6 @@ void HexGame::initializeNeighbors() {
     hexagons_[17]->setNeighbor(2, hexagons_[21]);
     hexagons_[17]->setNeighbor(3, hexagons_[26]);
     hexagons_[17]->setNeighbor(4, hexagons_[22]);
-    hexagons_[17]->setNeighbor(5, hexagons_[13]);
     hexagons_[18]->setNeighbor(0, hexagons_[9]);
     hexagons_[18]->setNeighbor(1, hexagons_[14]);
     hexagons_[18]->setNeighbor(2, hexagons_[23]);
@@ -623,7 +716,6 @@ std::pair<std::vector<Hexagon*>, std::vector<DraggableAgent*>> HexGame::bfs(Hexa
 }
 
 void HexGame::highlightPath(const std::vector<Hexagon*>& path, const std::vector<DraggableAgent*>& attackableEnemies) {
-    clearHighlight();
     for (Hexagon* hex : path) {
         QPointF center = hex->getCenter();
         QPolygonF hexShape = createHexagon(center.x(), center.y(), 50);
@@ -643,6 +735,7 @@ void HexGame::highlightPath(const std::vector<Hexagon*>& path, const std::vector
         scene->addItem(enemyItem);
     }
     view->update();
+    isAgentHighlighted = true;
 }
 
 void HexGame::clearHighlight() {
@@ -653,6 +746,7 @@ void HexGame::clearHighlight() {
             delete item;
         }
     }
+    isAgentHighlighted = false;
 }
 
 void HexGame::setCurrentHighlightedAgent(DraggableAgent* agent) {

@@ -1,4 +1,3 @@
-
 #ifndef AGENT_H
 #define AGENT_H
 
@@ -15,6 +14,15 @@ enum class AgentType {
     Grounded,
     Flying,
     Floating
+};
+
+struct AgentInfo {
+    QString name;
+    int hp;
+    int mobility;
+    int damage;
+    int attackRange;
+    AgentType type;
 };
 
 class Agent {

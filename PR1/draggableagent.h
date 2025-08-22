@@ -11,7 +11,7 @@ class HexGame;
 
 class DraggableAgent : public QGraphicsPolygonItem {
 public:
-    DraggableAgent(const QPolygonF& polygon, Agent* agent, QChar player, const QPointF& originalPos, HexGame* game);
+    DraggableAgent(const QPolygonF& polygon, Agent* agent, QChar player, const QPointF& originalPos, HexGame* game, const QString& imagePath);
     ~DraggableAgent();
 
     Agent* getAgent() const { return agent_; }
@@ -38,11 +38,38 @@ private:
 
 class DraggableWaterWalking : public DraggableAgent {
 public:
-    DraggableWaterWalking(const QPolygonF& polygon, WaterWalking* agent, QChar player, const QPointF& originalPos, HexGame* game)
-        : DraggableAgent(polygon, agent, player, originalPos, game) {
+    DraggableWaterWalking(const QPolygonF& polygon, WaterWalking* agent, QChar player, const QPointF& originalPos, HexGame* game, const QString& imagePath)
+        : DraggableAgent(polygon, agent, player, originalPos, game, imagePath) {
         setFlag(QGraphicsItem::ItemIsMovable, true);
         setZValue(10);
     }
 };
 
-#endif // DRAGGABLEAGENT_H
+class DraggableGrounded : public DraggableAgent {
+public:
+    DraggableGrounded(const QPolygonF& polygon, Grounded* agent, QChar player, const QPointF& originalPos, HexGame* game, const QString& imagePath)
+        : DraggableAgent(polygon, agent, player, originalPos, game, imagePath) {
+        setFlag(QGraphicsItem::ItemIsMovable, true);
+        setZValue(10);
+    }
+};
+
+class DraggableFlying : public DraggableAgent {
+public:
+    DraggableFlying(const QPolygonF& polygon, Flying* agent, QChar player, const QPointF& originalPos, HexGame* game, const QString& imagePath)
+        : DraggableAgent(polygon, agent, player, originalPos, game, imagePath) {
+        setFlag(QGraphicsItem::ItemIsMovable, true);
+        setZValue(10);
+    }
+};
+
+class DraggableFloating : public DraggableAgent {
+public:
+    DraggableFloating(const QPolygonF& polygon, Floating* agent, QChar player, const QPointF& originalPos, HexGame* game, const QString& imagePath)
+        : DraggableAgent(polygon, agent, player, originalPos, game, imagePath) {
+        setFlag(QGraphicsItem::ItemIsMovable, true);
+        setZValue(10);
+    }
+};
+
+#endif

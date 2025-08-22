@@ -2,11 +2,10 @@
 #define PAGEGALLERY1_H
 
 #include <QMainWindow>
-
-#include <QMainWindow>
 #include <QPushButton>
 #include <QList>
 #include <QScrollArea>
+#include <vector>
 
 namespace Ui {
 class pageGallery1;
@@ -23,7 +22,6 @@ public:
 private slots:
     void handlePlayButtonClick();
 
-
 private:
     Ui::pageGallery1 *ui;
     QScrollArea* leftScrollArea;
@@ -32,6 +30,10 @@ private:
     QList<QPushButton*> rightButtons;
     QList<QPushButton*> selectedLeftButtons;
     QList<QPushButton*> selectedRightButtons;
+
+
+    std::vector<int> selectedLeftIndices;
+    std::vector<int> selectedRightIndices;
 
     void setupSection(QWidget* container, bool isLeft);
     void handleButtonClick(QPushButton* button, int index, bool isLeft);

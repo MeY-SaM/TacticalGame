@@ -1,5 +1,5 @@
 #include "boardimagepaths.h"
-#include "QString"
+
 QString boardImagePaths[] = {
     ":/new/prefix1/angus1.png",
     ":/new/prefix1/billy1.png",
@@ -26,6 +26,4 @@ QString boardImagePaths[] = {
     ":/new/prefix1/sabrina1.png",
     ":/new/prefix1/death1.png"
 };
-#include "boardimagepaths.h"
 
-boardimagepaths::boardimagepaths() {}

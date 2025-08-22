@@ -3,7 +3,7 @@
 #include <QDebug>
 #include <algorithm>
 
-DraggableAgent::DraggableAgent(const QPolygonF& polygon, Agent* agent, QChar player, const QPointF& originalPos, HexGame* game)
+DraggableAgent::DraggableAgent(const QPolygonF& polygon, Agent* agent, QChar player, const QPointF& originalPos, HexGame* game, const QString& imagePath)
     : QGraphicsPolygonItem(polygon), agent_(agent), player_(player), originalPos_(originalPos), game_(game), isHighlighted_(false) {
     if (player == '1') {
         setBrush(QColor(224, 174, 208));
@@ -13,6 +13,16 @@ DraggableAgent::DraggableAgent(const QPolygonF& polygon, Agent* agent, QChar pla
     setPen(QPen(QColor(139, 69, 19), 1));
     setFlag(QGraphicsItem::ItemIsMovable, true);
     setZValue(10);
+
+    QPixmap pixmap(imagePath);
+    if (!pixmap.isNull()) {
+        QPixmap scaledPixmap = pixmap.scaled(160, 160, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+        QGraphicsPixmapItem* imageItem = new QGraphicsPixmapItem(scaledPixmap, this);
+        imageItem->setPos(boundingRect().center() - QPointF(scaledPixmap.width()/2 + 4, scaledPixmap.height()/2 - 8));
+        imageItem->setZValue(11);
+    } else {
+        qDebug() << "Failed to load image:" << imagePath;
+    }
 }
 
 DraggableAgent::~DraggableAgent() {
@@ -36,23 +46,23 @@ void DraggableAgent::mousePressEvent(QGraphicsSceneMouseEvent* event) {
         }
 
         setZValue(20);
-        qreal minDistance;
-        Hexagon* nearestCell = game_->findNearestCell(pos() + boundingRect().center(), minDistance);
-        if (nearestCell && minDistance < 100) {
-            if (!isHighlighted_) {
+        // Always toggle agent highlight, regardless of position
+        game_->toggleAgentHighlight(this);
+        setHighlighted(!isHighlighted_);
+        if (isHighlighted_) {
+            // If highlighted, show movement and attack ranges
+            qreal minDistance;
+            Hexagon* nearestCell = game_->findNearestCell(pos() + boundingRect().center(), minDistance);
+            if (nearestCell && minDistance < 100) {
                 auto [path, attackableEnemies] = game_->bfs(nearestCell, agent_->getAgentType(), agent_->getMobility(), agent_->getAttackRange());
                 game_->highlightPath(path, attackableEnemies);
-                isHighlighted_ = true;
                 highlightedPath_ = path;
                 highlightedAttackables_ = attackableEnemies;
-                game_->setCurrentHighlightedAgent(this);
-            } else {
-                game_->clearHighlight();
-                isHighlighted_ = false;
-                highlightedPath_.clear();
-                highlightedAttackables_.clear();
-                game_->setCurrentHighlightedAgent(nullptr);
             }
+        } else {
+            // If unhighlighted, clear path and attackables
+            highlightedPath_.clear();
+            highlightedAttackables_.clear();
         }
     }
     QGraphicsPolygonItem::mousePressEvent(event);

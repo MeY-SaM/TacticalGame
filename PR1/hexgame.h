@@ -25,6 +25,7 @@ class HexGame : public QWidget {
 
 public:
     explicit HexGame(QWidget *parent = nullptr);
+    HexGame(const std::vector<int>& leftIndices, const std::vector<int>& rightIndices, QWidget *parent = nullptr);
     ~HexGame();
 
     void printHexagonInfo();
@@ -37,6 +38,8 @@ public:
     void setCurrentHighlightedAgent(DraggableAgent* agent);
     DraggableAgent* getCurrentHighlightedAgent() const;
     void performAttack(DraggableAgent* attacker, DraggableAgent* defender);
+    void highlightAgentPosition(DraggableAgent* agent);
+    void toggleAgentHighlight(DraggableAgent* agent);
 
 private:
     void loadGrid(const QString &filename);
@@ -49,6 +52,7 @@ private:
     std::vector<DraggableAgent*> leftHexagons;
     std::vector<DraggableAgent*> rightHexagons;
     DraggableAgent* currentHighlightedAgent = nullptr;
+    bool isAgentHighlighted = false;
 };
 
-#endif // HEXGAME_H
+#endif
