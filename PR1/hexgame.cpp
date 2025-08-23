@@ -575,16 +575,16 @@ std::pair<std::vector<Hexagon*>, std::vector<DraggableAgent*>> HexGame::bfs(Hexa
         Hexagon* neighbor = start->getNeighbor(i);
         if (neighbor && visited.find(neighbor) == visited.end()) {
             bool isValidMove = true;
+            bool isValidLanding = true;
             QString cellValue = neighbor->getValue();
 
             if (type == AgentType::WaterWalking) {
-                if (cellValue == "#") isValidMove = false;
+                if (cellValue == "#") isValidMove = isValidLanding = false;
             } else if (type == AgentType::Grounded) {
-                if (cellValue == "~" || cellValue == "#") isValidMove = false;
+                if (cellValue == "~" || cellValue == "#") isValidMove = isValidLanding = false;
             } else if (type == AgentType::Floating) {
-                if (cellValue == "#") isValidMove = false;
             } else if (type == AgentType::Flying) {
-                // Flying agents can move to any cell
+                if (cellValue == "#" || cellValue == "~") isValidLanding = false;
             }
 
             bool isOccupied = false;
@@ -608,7 +608,9 @@ std::pair<std::vector<Hexagon*>, std::vector<DraggableAgent*>> HexGame::bfs(Hexa
             if (isValidMove && !isOccupied) {
                 visited.insert(neighbor);
                 queue.push({neighbor, 1});
-                moveResult.push_back(neighbor);
+                if (isValidLanding) {
+                    moveResult.push_back(neighbor);
+                }
             }
         }
     }
@@ -622,16 +624,16 @@ std::pair<std::vector<Hexagon*>, std::vector<DraggableAgent*>> HexGame::bfs(Hexa
                 Hexagon* neighbor = current->getNeighbor(i);
                 if (neighbor && visited.find(neighbor) == visited.end() && neighbor != start) {
                     bool isValidMove = true;
+                    bool isValidLanding = true;
                     QString cellValue = neighbor->getValue();
 
                     if (type == AgentType::WaterWalking) {
-                        if (cellValue == "#") isValidMove = false;
+                        if (cellValue == "#") isValidMove = isValidLanding = false;
                     } else if (type == AgentType::Grounded) {
-                        if (cellValue == "~" || cellValue == "#") isValidMove = false;
+                        if (cellValue == "~" || cellValue == "#") isValidMove = isValidLanding = false;
                     } else if (type == AgentType::Floating) {
-                        if (cellValue == "#") isValidMove = false;
                     } else if (type == AgentType::Flying) {
-                        // Flying agents can move to any cell
+                        if (cellValue == "#" || cellValue == "~") isValidLanding = false;
                     }
 
                     bool isOccupied = false;
@@ -655,7 +657,7 @@ std::pair<std::vector<Hexagon*>, std::vector<DraggableAgent*>> HexGame::bfs(Hexa
                     if (isValidMove && !isOccupied) {
                         visited.insert(neighbor);
                         queue.push({neighbor, distance + 1});
-                        if (distance + 1 <= mobility) {
+                        if (distance + 1 <= mobility && isValidLanding) {
                             moveResult.push_back(neighbor);
                         }
                     }
@@ -684,7 +686,6 @@ std::pair<std::vector<Hexagon*>, std::vector<DraggableAgent*>> HexGame::bfs(Hexa
 
     return {uniqueMoveResult, uniqueAttackableEnemies};
 }
-
 void HexGame::highlightPath(const std::vector<Hexagon*>& path, const std::vector<DraggableAgent*>& attackableEnemies) {
     clearHighlight();
     for (Hexagon* hex : path) {

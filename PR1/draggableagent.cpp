@@ -8,9 +8,7 @@ DraggableAgent::DraggableAgent(const QPolygonF& polygon, Agent* agent, QChar pla
     if (player == '1') {
         setBrush(QColor(61, 59, 243));
         setPen(QPen(QColor(96, 181, 255), 1));
-
     } else if (player == '2') {
-
         setBrush(QColor(217, 22, 86));
         setPen(QPen(QColor(255, 99, 71), 1));
     }
@@ -97,9 +95,9 @@ void DraggableAgent::mouseReleaseEvent(QGraphicsSceneMouseEvent* event) {
             } else if (agent_->getAgentType() == AgentType::Grounded) {
                 if (cellValue == "~" || cellValue == "#") isValidCell = false;
             } else if (agent_->getAgentType() == AgentType::Floating) {
-                if (cellValue == "#") isValidCell = false;
+                // Floating agents can land on any cell
             } else if (agent_->getAgentType() == AgentType::Flying) {
-
+                if (cellValue == "#" || cellValue == "~") isValidCell = false;
             }
 
             if (cellValue == "1" || cellValue == "2") {

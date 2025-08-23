@@ -107,32 +107,58 @@ void Agent::attack(DraggableAgent* defender, HexGame* game) {
         }
 
         if (!freeNeighbors.empty()) {
-            std::random_device rd;
-            std::mt19937 gen(rd());
-            std::uniform_int_distribution<> dis(0, freeNeighbors.size() - 1);
-            int randIndex = dis(gen);
-            Hexagon* newPos = freeNeighbors[randIndex];
+            std::vector<Hexagon*> validNeighbors;
+            AgentType type = getAgentType();
 
-            DraggableAgent* attacker = nullptr;
-            for (auto* da : game->getLeftHexagons()) {
-                if (da->getAgent() == this) {
-                    attacker = da;
-                    break;
+            for (Hexagon* neigh : freeNeighbors) {
+                QString val = neigh->getValue();
+                bool valid = true;
+
+                if (type == AgentType::WaterWalking) {
+                    if (val == "#") valid = false;
+                } else if (type == AgentType::Grounded) {
+                    if (val == "~" || val == "#") valid = false;
+                } else if (type == AgentType::Floating) {
+
+                } else if (type == AgentType::Flying) {
+                    if (val == "#" || val == "~") valid = false;
+                }
+
+                if (valid) {
+                    validNeighbors.push_back(neigh);
                 }
             }
-            if (!attacker) {
-                for (auto* da : game->getRightHexagons()) {
+
+            if (!validNeighbors.empty()) {
+                std::random_device rd;
+                std::mt19937 gen(rd());
+                std::uniform_int_distribution<> dis(0, validNeighbors.size() - 1);
+                int randIndex = dis(gen);
+                Hexagon* newPos = validNeighbors[randIndex];
+
+                DraggableAgent* attacker = nullptr;
+                for (auto* da : game->getLeftHexagons()) {
                     if (da->getAgent() == this) {
                         attacker = da;
                         break;
                     }
                 }
-            }
-            if (attacker) {
-                attacker->setPos(newPos->getCenter() - attacker->boundingRect().center());
-                attacker->setOriginalPos(newPos->getCenter());
-                attacker->getAgent()->setPosition(newPos);
-                qDebug() << Name << " moved to a random valid neighbor of " << defender->getAgent()->getName();
+                if (!attacker) {
+                    for (auto* da : game->getRightHexagons()) {
+                        if (da->getAgent() == this) {
+                            attacker = da;
+                            break;
+                        }
+                    }
+                }
+                if (attacker) {
+                    attacker->setPos(newPos->getCenter() - attacker->boundingRect().center());
+                    attacker->setOriginalPos(newPos->getCenter());
+                    attacker->getAgent()->setPosition(newPos);
+                    qDebug() << Name << " moved to a random valid neighbor of " << defender->getAgent()->getName();
+                }
+            } else {
+                qDebug() << "No valid free neighbors for " << Name << " to move to.";
             }
         } else {
             qDebug() << "No valid free neighbors for " << Name << " to move to.";
