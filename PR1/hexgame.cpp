@@ -12,7 +12,7 @@
 #include <set>
 #include <algorithm>
 
-AgentInfo agentInfos[24] = {
+AgentInfo* agentInfos = new AgentInfo[24]{
     {"Angus", 400, 2, 100, 1, AgentType::WaterWalking},
     {"Billy", 320, 3, 90, 1, AgentType::WaterWalking},
     {"Bunka", 320, 3, 100, 1, AgentType::WaterWalking},
@@ -692,7 +692,7 @@ void HexGame::highlightPath(const std::vector<Hexagon*>& path, const std::vector
         QPointF center = hex->getCenter();
         QPolygonF hexShape = createHexagon(center.x(), center.y(), 50);
         QGraphicsPolygonItem* hexItem = new QGraphicsPolygonItem(hexShape);
-        hexItem->setBrush(QColor(0, 255, 0, 200));
+        hexItem->setBrush(QColor(0, 255, 0, 150));
         hexItem->setPen(QPen(Qt::black, 2));
         hexItem->setZValue(5);
         scene->addItem(hexItem);

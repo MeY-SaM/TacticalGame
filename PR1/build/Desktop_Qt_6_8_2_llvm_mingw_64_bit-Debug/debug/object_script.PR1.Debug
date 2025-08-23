@@ -1,3 +1,6 @@
+debug/agent.o
+debug/boardimagepaths.o
+debug/draggableagent.o
 debug/draggablehexagon.o
 debug/hexgame.o
 debug/main.o
@@ -7,6 +10,7 @@ debug/pagegallery.o
 debug/pagegallery1.o
 debug/pagename.o
 debug/qrc_Agent.o
+debug/qrc_Agentboard.o
 debug/qrc_bp.o
 debug/qrc_page.o
 debug/qrc_page1.o

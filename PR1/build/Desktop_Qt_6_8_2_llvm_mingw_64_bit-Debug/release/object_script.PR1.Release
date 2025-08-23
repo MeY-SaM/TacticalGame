@@ -1,3 +1,6 @@
+release/agent.o
+release/boardimagepaths.o
+release/draggableagent.o
 release/draggablehexagon.o
 release/hexgame.o
 release/main.o
@@ -7,6 +10,7 @@ release/pagegallery.o
 release/pagegallery1.o
 release/pagename.o
 release/qrc_Agent.o
+release/qrc_Agentboard.o
 release/qrc_bp.o
 release/qrc_page.o
 release/qrc_page1.o

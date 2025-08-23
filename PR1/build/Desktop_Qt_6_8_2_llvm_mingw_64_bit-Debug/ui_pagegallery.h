@@ -31,13 +31,13 @@ public:
     {
         if (pageGallery->objectName().isEmpty())
             pageGallery->setObjectName("pageGallery");
-        pageGallery->resize(800, 600);
+        pageGallery->resize(1184, 672);
         pageGallery->setStyleSheet(QString::fromUtf8(""));
         centralwidget = new QWidget(pageGallery);
         centralwidget->setObjectName("centralwidget");
         pushButton = new QPushButton(centralwidget);
         pushButton->setObjectName("pushButton");
-        pushButton->setGeometry(QRect(0, 10, 101, 41));
+        pushButton->setGeometry(QRect(0, 0, 101, 41));
         QFont font;
         font.setFamilies({QString::fromUtf8("Segoe Print")});
         font.setPointSize(18);
@@ -46,7 +46,7 @@ public:
         pageGallery->setCentralWidget(centralwidget);
         menubar = new QMenuBar(pageGallery);
         menubar->setObjectName("menubar");
-        menubar->setGeometry(QRect(0, 0, 800, 26));
+        menubar->setGeometry(QRect(0, 0, 1184, 26));
         pageGallery->setMenuBar(menubar);
         statusbar = new QStatusBar(pageGallery);
         statusbar->setObjectName("statusbar");
