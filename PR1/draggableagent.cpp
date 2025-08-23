@@ -6,11 +6,15 @@
 DraggableAgent::DraggableAgent(const QPolygonF& polygon, Agent* agent, QChar player, const QPointF& originalPos, HexGame* game, const QString& imagePath)
     : QGraphicsPolygonItem(polygon), agent_(agent), player_(player), originalPos_(originalPos), game_(game), isHighlighted_(false) {
     if (player == '1') {
-        setBrush(QColor(224, 174, 208));
+        setBrush(QColor(61, 59, 243));
+        setPen(QPen(QColor(96, 181, 255), 1));
+
     } else if (player == '2') {
-        setBrush(QColor(221, 168, 83));
+
+        setBrush(QColor(217, 22, 86));
+        setPen(QPen(QColor(255, 99, 71), 1));
     }
-    setPen(QPen(QColor(139, 69, 19), 1));
+
     setFlag(QGraphicsItem::ItemIsMovable, true);
     setZValue(10);
 
@@ -33,9 +37,9 @@ void DraggableAgent::mousePressEvent(QGraphicsSceneMouseEvent* event) {
     if (event->button() == Qt::LeftButton) {
         DraggableAgent* attacker = game_->getCurrentHighlightedAgent();
         if (attacker && attacker != this && attacker->getPlayer() != player_) {
-            auto it = std::find(attacker->highlightedAttackables_.begin(), attacker->highlightedAttackables_.end(), this);
-            if (it != attacker->highlightedAttackables_.end()) {
-                game_->performAttack(attacker, this);
+            auto it = std::find(attacker->getHighlightedAttackables().begin(), attacker->getHighlightedAttackables().end(), this);
+            if (it != attacker->getHighlightedAttackables().end()) {
+                attacker->getAgent()->attack(this, game_);
                 attacker->setHighlighted(false);
                 attacker->clearHighlightedPath();
                 attacker->clearHighlightedAttackables();
@@ -46,23 +50,20 @@ void DraggableAgent::mousePressEvent(QGraphicsSceneMouseEvent* event) {
         }
 
         setZValue(20);
-        // Always toggle agent highlight, regardless of position
-        game_->toggleAgentHighlight(this);
-        setHighlighted(!isHighlighted_);
-        if (isHighlighted_) {
-            // If highlighted, show movement and attack ranges
-            qreal minDistance;
-            Hexagon* nearestCell = game_->findNearestCell(pos() + boundingRect().center(), minDistance);
-            if (nearestCell && minDistance < 100) {
-                auto [path, attackableEnemies] = game_->bfs(nearestCell, agent_->getAgentType(), agent_->getMobility(), agent_->getAttackRange());
-                game_->highlightPath(path, attackableEnemies);
-                highlightedPath_ = path;
-                highlightedAttackables_ = attackableEnemies;
+        qreal minDistance;
+        Hexagon* nearestCell = game_->findNearestCell(pos() + boundingRect().center(), minDistance);
+        if (nearestCell && minDistance < 100) {
+            if (!isHighlighted_) {
+                agent_->move(game_);
+                setHighlighted(true);
+                game_->setCurrentHighlightedAgent(this);
+            } else {
+                game_->clearHighlight();
+                setHighlighted(false);
+                clearHighlightedPath();
+                clearHighlightedAttackables();
+                game_->setCurrentHighlightedAgent(nullptr);
             }
-        } else {
-            // If unhighlighted, clear path and attackables
-            highlightedPath_.clear();
-            highlightedAttackables_.clear();
         }
     }
     QGraphicsPolygonItem::mousePressEvent(event);
@@ -79,48 +80,44 @@ void DraggableAgent::mouseReleaseEvent(QGraphicsSceneMouseEvent* event) {
     Hexagon* nearestCell = game_->findNearestCell(event->scenePos(), minDistance);
     bool isValidPlacement = false;
 
-    if (nearestCell && minDistance < 100) {
+    if (nearestCell && minDistance < 160) {
         QString cellValue = nearestCell->getValue();
-        if (player_ == '1' && cellValue == "s1") {
-            isValidPlacement = true;
-        } else if (player_ == '2' && cellValue == "s2") {
-            isValidPlacement = true;
-        } else if (isHighlighted_) {
-            bool isValidCell = true;
-            if (agent_->getAgentType() == AgentType::WaterWalking) {
-                if (cellValue != "~" && cellValue != " " && cellValue != "s2") {
-                    isValidCell = false;
-                }
-            } else if (agent_->getAgentType() == AgentType::Grounded) {
-                if (cellValue != " " && cellValue != "s1") {
-                    isValidCell = false;
-                }
-            } else if (agent_->getAgentType() == AgentType::Floating) {
-                if (cellValue == "#") {
-                    isValidCell = false;
-                }
-            } else if (agent_->getAgentType() == AgentType::Flying) {
-                if (player_ == '1' && cellValue != " " && cellValue != "s1") {
-                    isValidCell = false;
-                } else if (player_ == '2' && cellValue != " " && cellValue != "s2") {
-                    isValidCell = false;
-                }
+        bool isValidCell = true;
+
+        bool isInitialPlacement = (player_ == '1' && qAbs(originalPos_.x() - 75) < 1) ||
+                                  (player_ == '2' && qAbs(originalPos_.x() - 1109) < 1);
+
+        if (isInitialPlacement) {
+            if ((player_ == '1' && cellValue == "s1") || (player_ == '2' && cellValue == "s2")) {
+                isValidPlacement = true;
             }
+        } else {
+            if (agent_->getAgentType() == AgentType::WaterWalking) {
+                if (cellValue == "#") isValidCell = false;
+            } else if (agent_->getAgentType() == AgentType::Grounded) {
+                if (cellValue == "~" || cellValue == "#") isValidCell = false;
+            } else if (agent_->getAgentType() == AgentType::Floating) {
+                if (cellValue == "#") isValidCell = false;
+            } else if (agent_->getAgentType() == AgentType::Flying) {
+
+            }
+
             if (cellValue == "1" || cellValue == "2") {
                 isValidCell = false;
             }
+
             isValidPlacement = (isValidCell && std::find(highlightedPath_.begin(), highlightedPath_.end(), nearestCell) != highlightedPath_.end());
         }
 
         if (isValidPlacement) {
             setPos(nearestCell->getCenter() - boundingRect().center());
-            originalPos_ = nearestCell->getCenter();
+            setOriginalPos(nearestCell->getCenter());
             agent_->setPosition(nearestCell);
             game_->drawBoard();
             game_->clearHighlight();
-            isHighlighted_ = false;
-            highlightedPath_.clear();
-            highlightedAttackables_.clear();
+            setHighlighted(false);
+            clearHighlightedPath();
+            clearHighlightedAttackables();
             game_->setCurrentHighlightedAgent(nullptr);
         } else {
             setPos(originalPos_ - boundingRect().center());

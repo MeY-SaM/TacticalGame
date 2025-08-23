@@ -3,7 +3,7 @@
 QString boardImagePaths[] = {
     ":/new/prefix1/angus1.png",
     ":/new/prefix1/billy1.png",
-    ":/new/prefix1/bunka1.png",
+    ":/new/prefix1/bunke1.png",
     ":/new/prefix1/colonelbaba1.png",
     ":/new/prefix1/duraham1.png",
     ":/new/prefix1/medusa1.png",

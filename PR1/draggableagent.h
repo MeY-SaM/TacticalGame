@@ -20,6 +20,10 @@ public:
     void setHighlighted(bool highlighted) { isHighlighted_ = highlighted; }
     void clearHighlightedPath() { highlightedPath_.clear(); }
     void clearHighlightedAttackables() { highlightedAttackables_.clear(); }
+    void setHighlightedPath(const std::vector<Hexagon*>& path) { highlightedPath_ = path; }
+    void setHighlightedAttackables(const std::vector<DraggableAgent*>& attackables) { highlightedAttackables_ = attackables; }
+    const std::vector<Hexagon*>& getHighlightedPath() const { return highlightedPath_; }
+    const std::vector<DraggableAgent*>& getHighlightedAttackables() const { return highlightedAttackables_; }
 
 protected:
     void mousePressEvent(QGraphicsSceneMouseEvent* event) override;

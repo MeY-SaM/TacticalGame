@@ -3,7 +3,6 @@
 
 #include <QDebug>
 #include <QString>
-#include <vector>
 
 class HexGame;
 class Hexagon;
@@ -30,10 +29,7 @@ public:
     Agent(const QString& name, int hp, int mobility, int damage, int attackRange);
     virtual ~Agent() = default;
 
-    virtual void attack(const std::string& target) const {
-        qDebug() << Name << " attacks " << QString::fromStdString(target) << " with " << Damage << " damage!";
-    }
-
+    virtual void attack(DraggableAgent* defender, HexGame* game);
     virtual void move(HexGame* game) = 0;
     virtual AgentType getAgentType() const = 0;
 

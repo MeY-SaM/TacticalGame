@@ -33,13 +33,13 @@ public:
     QPolygonF createHexagon(qreal x, qreal y, qreal radius) const;
     void drawBoard();
     std::pair<std::vector<Hexagon*>, std::vector<DraggableAgent*>> bfs(Hexagon* start, AgentType type, int mobility, int attackRange);
-    void highlightPath(const std::vector<Hexagon*>& path, const std::vector<DraggableAgent*>& attackableEnemies = {});
+    void highlightPath(const std::vector<Hexagon*>& path, const std::vector<DraggableAgent*>& attackableEnemies);
     void clearHighlight();
     void setCurrentHighlightedAgent(DraggableAgent* agent);
     DraggableAgent* getCurrentHighlightedAgent() const;
-    void performAttack(DraggableAgent* attacker, DraggableAgent* defender);
-    void highlightAgentPosition(DraggableAgent* agent);
-    void toggleAgentHighlight(DraggableAgent* agent);
+    std::vector<DraggableAgent*>& getLeftHexagons() { return leftHexagons; }
+    std::vector<DraggableAgent*>& getRightHexagons() { return rightHexagons; }
+    QGraphicsScene* getScene() { return scene; }
 
 private:
     void loadGrid(const QString &filename);
@@ -52,7 +52,6 @@ private:
     std::vector<DraggableAgent*> leftHexagons;
     std::vector<DraggableAgent*> rightHexagons;
     DraggableAgent* currentHighlightedAgent = nullptr;
-    bool isAgentHighlighted = false;
 };
 
 #endif

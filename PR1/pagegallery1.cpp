@@ -15,7 +15,7 @@
 QString* imagePaths = new QString[] {
     ":/Water Walking/angus.png",
     ":/Water Walking/billy.png",
-    ":/Water Walking/bunke.png",
+    ":/Water Walking/bunka.png",
     ":/Water Walking/colonelbaba.png",
     ":/Water Walking/duraham.png",
     ":/Water Walking/medusa.png",

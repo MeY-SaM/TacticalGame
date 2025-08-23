@@ -1,8 +1,146 @@
 #include "agent.h"
 #include "hexgame.h"
+#include "draggableagent.h"
+#include <random>
 
 Agent::Agent(const QString& name, int hp, int mobility, int damage, int attackRange)
     : Name(name), Hp(hp), Mobility(mobility), Damage(damage), AttackRange(attackRange), hexagon_(nullptr) {}
+
+void Agent::attack(DraggableAgent* defender, HexGame* game) {
+    if (!defender || !game) {
+        qDebug() << "Invalid defender or game in attack!";
+        return;
+    }
+
+    int damage = Damage;
+    defender->getAgent()->setHP(defender->getAgent()->getHP() - damage);
+    qDebug() << Name << " attacks " << defender->getAgent()->getName() << " for " << damage << " damage.";
+
+    if (defender->getAgent()->getHP() <= 0) {
+        qDebug() << defender->getAgent()->getName() << " is defeated!";
+        game->getScene()->removeItem(defender);
+        if (defender->getPlayer() == '1') {
+            game->getLeftHexagons().erase(
+                std::remove(game->getLeftHexagons().begin(), game->getLeftHexagons().end(), defender),
+                game->getLeftHexagons().end());
+        } else {
+            game->getRightHexagons().erase(
+                std::remove(game->getRightHexagons().begin(), game->getRightHexagons().end(), defender),
+                game->getRightHexagons().end());
+        }
+        delete defender;
+        defender = nullptr;
+    }
+
+    if (defender) {
+        int counterDamage = defender->getAgent()->getDamage() / 2;
+        setHP(Hp - counterDamage);
+        qDebug() << defender->getAgent()->getName() << " counters " << Name << " for " << counterDamage << " damage.";
+
+        if (Hp <= 0) {
+            qDebug() << Name << " is defeated!";
+            DraggableAgent* attacker = nullptr;
+            for (auto* da : game->getLeftHexagons()) {
+                if (da->getAgent() == this) {
+                    attacker = da;
+                    break;
+                }
+            }
+            if (!attacker) {
+                for (auto* da : game->getRightHexagons()) {
+                    if (da->getAgent() == this) {
+                        attacker = da;
+                        break;
+                    }
+                }
+            }
+            if (attacker) {
+                game->getScene()->removeItem(attacker);
+                if (attacker->getPlayer() == '1') {
+                    game->getLeftHexagons().erase(
+                        std::remove(game->getLeftHexagons().begin(), game->getLeftHexagons().end(), attacker),
+                        game->getLeftHexagons().end());
+                } else {
+                    game->getRightHexagons().erase(
+                        std::remove(game->getRightHexagons().begin(), game->getRightHexagons().end(), attacker),
+                        game->getRightHexagons().end());
+                }
+                delete attacker;
+            }
+            game->clearHighlight();
+            game->setCurrentHighlightedAgent(nullptr);
+            game->drawBoard();
+            return;
+        }
+    }
+
+    if (defender) {
+        Hexagon* defPos = defender->getAgent()->getPosition();
+        std::vector<Hexagon*> freeNeighbors;
+        for (int i = 0; i < 6; ++i) {
+            Hexagon* neigh = defPos->getNeighbor(i);
+            if (neigh) {
+                QString val = neigh->getValue();
+                bool valid = true;
+                AgentType type = getAgentType();
+
+                if (type == AgentType::WaterWalking) {
+                    if (val == "#") valid = false;
+                } else if (type == AgentType::Grounded) {
+                    if (val == "~" || val == "#") valid = false;
+                } else if (type == AgentType::Floating) {
+                    if (val == "#") valid = false;
+                } else if (type == AgentType::Flying) {
+
+                }
+
+                bool occupied = false;
+                for (auto* da : game->getLeftHexagons()) {
+                    if (da->getAgent()->getPosition() == neigh) occupied = true;
+                }
+                for (auto* da : game->getRightHexagons()) {
+                    if (da->getAgent()->getPosition() == neigh) occupied = true;
+                }
+
+                if (valid && !occupied) freeNeighbors.push_back(neigh);
+            }
+        }
+
+        if (!freeNeighbors.empty()) {
+            std::random_device rd;
+            std::mt19937 gen(rd());
+            std::uniform_int_distribution<> dis(0, freeNeighbors.size() - 1);
+            int randIndex = dis(gen);
+            Hexagon* newPos = freeNeighbors[randIndex];
+
+            DraggableAgent* attacker = nullptr;
+            for (auto* da : game->getLeftHexagons()) {
+                if (da->getAgent() == this) {
+                    attacker = da;
+                    break;
+                }
+            }
+            if (!attacker) {
+                for (auto* da : game->getRightHexagons()) {
+                    if (da->getAgent() == this) {
+                        attacker = da;
+                        break;
+                    }
+                }
+            }
+            if (attacker) {
+                attacker->setPos(newPos->getCenter() - attacker->boundingRect().center());
+                attacker->setOriginalPos(newPos->getCenter());
+                attacker->getAgent()->setPosition(newPos);
+                qDebug() << Name << " moved to a random valid neighbor of " << defender->getAgent()->getName();
+            }
+        } else {
+            qDebug() << "No valid free neighbors for " << Name << " to move to.";
+        }
+    }
+
+    game->drawBoard();
+}
 
 WaterWalking::WaterWalking(const QString& name, int hp, int mobility, int damage, int attackRange)
     : Agent(name, hp, mobility, damage, attackRange) {}
@@ -13,12 +151,37 @@ void WaterWalking::move(HexGame* game) {
         return;
     }
 
+    DraggableAgent* draggable = nullptr;
+    for (auto* da : game->getLeftHexagons()) {
+        if (da->getAgent() == this) {
+            draggable = da;
+            break;
+        }
+    }
+    if (!draggable) {
+        for (auto* da : game->getRightHexagons()) {
+            if (da->getAgent() == this) {
+                draggable = da;
+                break;
+            }
+        }
+    }
+
+    if (!draggable) {
+        qDebug() << "No DraggableAgent found for WaterWalking!";
+        return;
+    }
+
     auto [possibleMoves, attackableEnemies] = game->bfs(hexagon_, AgentType::WaterWalking, Mobility, AttackRange);
     if (possibleMoves.empty()) {
         qDebug() << "No valid moves available for WaterWalking!";
         return;
     }
 
+    draggable->clearHighlightedPath();
+    draggable->clearHighlightedAttackables();
+    draggable->setHighlightedPath(possibleMoves);
+    draggable->setHighlightedAttackables(attackableEnemies);
     game->highlightPath(possibleMoves, attackableEnemies);
     qDebug() << "WaterWalking" << Name << " possible moves and attackable enemies highlighted.";
 }
@@ -32,12 +195,37 @@ void Grounded::move(HexGame* game) {
         return;
     }
 
+    DraggableAgent* draggable = nullptr;
+    for (auto* da : game->getLeftHexagons()) {
+        if (da->getAgent() == this) {
+            draggable = da;
+            break;
+        }
+    }
+    if (!draggable) {
+        for (auto* da : game->getRightHexagons()) {
+            if (da->getAgent() == this) {
+                draggable = da;
+                break;
+            }
+        }
+    }
+
+    if (!draggable) {
+        qDebug() << "No DraggableAgent found for Grounded!";
+        return;
+    }
+
     auto [possibleMoves, attackableEnemies] = game->bfs(hexagon_, AgentType::Grounded, Mobility, AttackRange);
     if (possibleMoves.empty()) {
         qDebug() << "No valid moves available for Grounded!";
         return;
     }
 
+    draggable->clearHighlightedPath();
+    draggable->clearHighlightedAttackables();
+    draggable->setHighlightedPath(possibleMoves);
+    draggable->setHighlightedAttackables(attackableEnemies);
     game->highlightPath(possibleMoves, attackableEnemies);
     qDebug() << "Grounded" << Name << " possible moves and attackable enemies highlighted.";
 }
@@ -51,12 +239,37 @@ void Flying::move(HexGame* game) {
         return;
     }
 
+    DraggableAgent* draggable = nullptr;
+    for (auto* da : game->getLeftHexagons()) {
+        if (da->getAgent() == this) {
+            draggable = da;
+            break;
+        }
+    }
+    if (!draggable) {
+        for (auto* da : game->getRightHexagons()) {
+            if (da->getAgent() == this) {
+                draggable = da;
+                break;
+            }
+        }
+    }
+
+    if (!draggable) {
+        qDebug() << "No DraggableAgent found for Flying!";
+        return;
+    }
+
     auto [possibleMoves, attackableEnemies] = game->bfs(hexagon_, AgentType::Flying, Mobility, AttackRange);
     if (possibleMoves.empty()) {
         qDebug() << "No valid moves available for Flying!";
         return;
     }
 
+    draggable->clearHighlightedPath();
+    draggable->clearHighlightedAttackables();
+    draggable->setHighlightedPath(possibleMoves);
+    draggable->setHighlightedAttackables(attackableEnemies);
     game->highlightPath(possibleMoves, attackableEnemies);
     qDebug() << "Flying" << Name << " possible moves and attackable enemies highlighted.";
 }
@@ -70,12 +283,37 @@ void Floating::move(HexGame* game) {
         return;
     }
 
+    DraggableAgent* draggable = nullptr;
+    for (auto* da : game->getLeftHexagons()) {
+        if (da->getAgent() == this) {
+            draggable = da;
+            break;
+        }
+    }
+    if (!draggable) {
+        for (auto* da : game->getRightHexagons()) {
+            if (da->getAgent() == this) {
+                draggable = da;
+                break;
+            }
+        }
+    }
+
+    if (!draggable) {
+        qDebug() << "No DraggableAgent found for Floating!";
+        return;
+    }
+
     auto [possibleMoves, attackableEnemies] = game->bfs(hexagon_, AgentType::Floating, Mobility, AttackRange);
     if (possibleMoves.empty()) {
         qDebug() << "No valid moves available for Floating!";
         return;
     }
 
+    draggable->clearHighlightedPath();
+    draggable->clearHighlightedAttackables();
+    draggable->setHighlightedPath(possibleMoves);
+    draggable->setHighlightedAttackables(attackableEnemies);
     game->highlightPath(possibleMoves, attackableEnemies);
     qDebug() << "Floating" << Name << " possible moves and attackable enemies highlighted.";
 }
