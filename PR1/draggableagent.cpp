@@ -7,10 +7,10 @@ DraggableAgent::DraggableAgent(const QPolygonF& polygon, Agent* agent, QChar pla
     : QGraphicsPolygonItem(polygon), agent_(agent), player_(player), originalPos_(originalPos), game_(game), isHighlighted_(false) {
     if (player == '1') {
         setBrush(QColor(61, 59, 243));
-        setPen(QPen(QColor(96, 181, 255), 1));
+        setPen(Qt::NoPen);
     } else if (player == '2') {
         setBrush(QColor(217, 22, 86));
-        setPen(QPen(QColor(255, 99, 71), 1));
+        setPen(Qt::NoPen);
     }
 
     setFlag(QGraphicsItem::ItemIsMovable, true);

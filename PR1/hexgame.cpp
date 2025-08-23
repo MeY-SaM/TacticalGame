@@ -87,7 +87,7 @@ HexGame::HexGame(const std::vector<int>& leftIndices, const std::vector<int>& ri
         Agent* agent = nullptr;
         DraggableAgent* draggable = nullptr;
         float y = 50 + i * 100;
-        QPolygonF hexShape = createHexagon(75, y, 50);
+        QPolygonF hexShape = createHexagon(75, y, 44.5);
         QPointF originalPos = QPointF(75, y);
         switch (info.type) {
         case AgentType::WaterWalking:
@@ -123,7 +123,7 @@ HexGame::HexGame(const std::vector<int>& leftIndices, const std::vector<int>& ri
         Agent* agent = nullptr;
         DraggableAgent* draggable = nullptr;
         float y = 50 + i * 100;
-        QPolygonF hexShape = createHexagon(1109, y, 50);
+        QPolygonF hexShape = createHexagon(1109, y, 44.5);
         QPointF originalPos = QPointF(1109, y);
         switch (info.type) {
         case AgentType::WaterWalking:
