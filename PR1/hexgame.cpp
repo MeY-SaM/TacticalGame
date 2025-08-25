@@ -11,6 +11,7 @@
 #include <queue>
 #include <set>
 #include <algorithm>
+#include <random>
 
 AgentInfo* agentInfos = new AgentInfo[24]{
     {"Angus", 400, 2, 100, 1, AgentType::WaterWalking},
@@ -77,7 +78,10 @@ HexGame::HexGame(const std::vector<int>& leftIndices, const std::vector<int>& ri
     hexagons_.resize(hexCount);
     setupHexagons();
     initializeNeighbors();
-    loadGrid(":/new/prefix1/grid4.txt");
+
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    loadGrid(":/new/prefix1/grid" + QString::number(std::uniform_int_distribution<>(1, 8)(gen)) + ".txt");
 
     leftHexagons.resize(8);
     for (size_t i = 0; i < 8; ++i) {
