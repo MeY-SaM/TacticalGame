@@ -61,6 +61,11 @@ HexGame::HexGame(const std::vector<int>& leftIndices, const std::vector<int>& ri
     view->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     view->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
+
+    QLabel* turnLabel = new QLabel(" Turn: Player 1", this);
+    turnLabel->setGeometry(542, 10, 100, 30);
+    turnLabel->setStyleSheet("QLabel { color: white; font-size: 16px; background-color: rgba(0, 0, 0, 150); }");
+
     QPixmap background(":/BoardImage.png");
     if (!background.isNull()) {
         QPixmap scaledBackground = background.scaled(1184, 800, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
@@ -730,4 +735,26 @@ void HexGame::setCurrentHighlightedAgent(DraggableAgent* agent) {
 
 DraggableAgent* HexGame::getCurrentHighlightedAgent() const {
     return currentHighlightedAgent;
+}
+void HexGame::switchTurn() {
+    currentPlayer_ = (currentPlayer_ == '1') ? '2' : '1';
+    actionsTaken_ = 0;
+    qDebug() << "Turn switched to Player" << currentPlayer_;
+    clearHighlight();
+    setCurrentHighlightedAgent(nullptr);
+    drawBoard();
+    QLabel* turnLabel = findChild<QLabel*>();
+    if (turnLabel) {
+        turnLabel->setText(QString("Turn: Player %1").arg(currentPlayer_));
+    }
+}
+int HexGame::countAgentsOnBoard(QChar player) const {
+    int count = 0;
+    const std::vector<DraggableAgent*>& playerHexagons = (player == '1') ? leftHexagons : rightHexagons;
+    for (const auto* agent : playerHexagons) {
+        if (agent->getAgent()->getPosition() != nullptr) {
+            count++;
+        }
+    }
+    return count;
 }

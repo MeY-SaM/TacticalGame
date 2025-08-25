@@ -40,6 +40,14 @@ public:
     std::vector<DraggableAgent*>& getLeftHexagons() { return leftHexagons; }
     std::vector<DraggableAgent*>& getRightHexagons() { return rightHexagons; }
     QGraphicsScene* getScene() { return scene; }
+    void setCurrentPlayer(QChar player) { currentPlayer_ = player; }
+    QChar getCurrentPlayer() const { return currentPlayer_; }
+    void switchTurn();
+    void resetActions() { actionsTaken_ = 0; }
+    bool canTakeAction() const { return actionsTaken_ < 1; }
+    void incrementActions() { ++actionsTaken_; }
+    int countAgentsOnBoard(QChar player) const;
+
 
 private:
     void loadGrid(const QString &filename);
@@ -52,6 +60,8 @@ private:
     std::vector<DraggableAgent*> leftHexagons;
     std::vector<DraggableAgent*> rightHexagons;
     DraggableAgent* currentHighlightedAgent = nullptr;
+    QChar currentPlayer_ = '1';
+    int actionsTaken_ = 0;
 };
 
 #endif
