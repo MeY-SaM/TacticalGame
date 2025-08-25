@@ -63,9 +63,10 @@ HexGame::HexGame(const std::vector<int>& leftIndices, const std::vector<int>& ri
 
     QPixmap background(":/BoardImage.png");
     if (!background.isNull()) {
-        QPixmap scaledBackground = background.scaled(background.width(), 800, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+        QPixmap scaledBackground = background.scaled(1184, 800, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
         QGraphicsPixmapItem *backgroundItem = new QGraphicsPixmapItem(scaledBackground);
         backgroundItem->setZValue(-1);
+        backgroundItem->setPos(0, 0);
         scene->addItem(backgroundItem);
     } else {
         qDebug() << "Failed to load background image";
