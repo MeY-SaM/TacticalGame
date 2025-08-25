@@ -745,7 +745,7 @@ void HexGame::switchTurn() {
     drawBoard();
     QLabel* turnLabel = findChild<QLabel*>();
     if (turnLabel) {
-        turnLabel->setText(QString("Turn: Player %1").arg(currentPlayer_));
+        turnLabel->setText(QString(" Turn: Player %1").arg(currentPlayer_));
     }
 }
 int HexGame::countAgentsOnBoard(QChar player) const {

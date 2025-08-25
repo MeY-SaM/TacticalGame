@@ -2,6 +2,8 @@
 #include "hexgame.h"
 #include "draggableagent.h"
 #include <random>
+#include<QMessageBox>
+
 
 Agent::Agent(const QString& name, int hp, int mobility, int damage, int attackRange)
     : Name(name), Hp(hp), Mobility(mobility), Damage(damage), AttackRange(attackRange), hexagon_(nullptr) {}
@@ -163,6 +165,15 @@ void Agent::attack(DraggableAgent* defender, HexGame* game) {
         } else {
             qDebug() << "No valid free neighbors for " << Name << " to move to.";
         }
+    }
+    if (game->countAgentsOnBoard('1') == 0) {
+        qDebug() << "Player 2 wins!";
+        QMessageBox::information(game, "Game Over", "Player 2 wins! All Player 1 agents on board are defeated.");
+        game->close();
+    } else if (game->countAgentsOnBoard('2') == 0) {
+        qDebug() << "Player 1 wins!";
+        QMessageBox::information(game, "Game Over", "Player 1 wins! All Player 2 agents on board are defeated.");
+        game->close();
     }
 
     game->drawBoard();
