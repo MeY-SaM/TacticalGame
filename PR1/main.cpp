@@ -1,15 +1,11 @@
 #include "page.h"
-//#include "pagename.h"
 #include <QApplication>
 #include <QMainWindow>
 #include <QPainter>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
-//#include <fstream>
-//#include <vector>
-//#include <iostream>
-//#include <cmath>
-//#include "hexagon.h"
+#include <QMediaPlayer>
+#include <QAudioOutput>
 
 /*void parseFile(const std::string& filename, Hexagon* hexagons[], size_t count) {
     std::ifstream file(filename);
@@ -48,6 +44,17 @@
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
+    QMediaPlayer* player = new QMediaPlayer;
+    QAudioOutput* audioOutput = new QAudioOutput;
+    player->setAudioOutput(audioOutput);
+    player->setSource(QUrl("qrc:/new/prefix1/soundgame.mp3"));
+    audioOutput->setVolume(0.5);
+    QObject::connect(player, &QMediaPlayer::mediaStatusChanged, [=](QMediaPlayer::MediaStatus status) {
+        if (status == QMediaPlayer::EndOfMedia) {
+            player->play();
+        }
+    });
+    player->play();
     Page w;
     w.show();
     //pageName w;
