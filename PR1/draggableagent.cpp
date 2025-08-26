@@ -18,12 +18,19 @@ DraggableAgent::DraggableAgent(const QPolygonF& polygon, Agent* agent, QChar pla
 
     QPixmap pixmap(imagePath);
     if (!pixmap.isNull()) {
-        QPixmap scaledPixmap = pixmap.scaled(160, 160, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+        if  (imagePath == ":/new/prefix1/billy1.png") {
+
+            QPixmap scaledPixmap = pixmap.scaled(160, 160, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+            QGraphicsPixmapItem* imageItem = new QGraphicsPixmapItem(scaledPixmap, this);
+            imageItem->setPos(boundingRect().center() - QPointF(scaledPixmap.width()/2 , scaledPixmap.height()/2 ));
+            imageItem->setZValue(11);
+        }
+else{       QPixmap scaledPixmap = pixmap.scaled(160, 160, Qt::KeepAspectRatio, Qt::SmoothTransformation);
         QGraphicsPixmapItem* imageItem = new QGraphicsPixmapItem(scaledPixmap, this);
         imageItem->setPos(boundingRect().center() - QPointF(scaledPixmap.width()/2 + 4, scaledPixmap.height()/2 - 8));
         imageItem->setZValue(11);
-    } else {
-        qDebug() << "Failed to load image:" << imagePath;
+    }// else {
+    //    qDebug() << "Failed to load image:" << imagePath;
     }
 }
 
