@@ -12,6 +12,7 @@ release/pagename.o
 release/qrc_Agent.o
 release/qrc_Agentboard.o
 release/qrc_bp.o
+release/qrc_music.o
 release/qrc_page.o
 release/qrc_page1.o
 release/qrc_pageGallery.o

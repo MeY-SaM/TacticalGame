@@ -2,8 +2,7 @@
 #include "hexgame.h"
 #include "draggableagent.h"
 #include <random>
-#include<QMessageBox>
-
+#include <QMessageBox>
 
 Agent::Agent(const QString& name, int hp, int mobility, int damage, int attackRange)
     : Name(name), Hp(hp), Mobility(mobility), Damage(damage), AttackRange(attackRange), hexagon_(nullptr) {}
@@ -18,7 +17,9 @@ void Agent::attack(DraggableAgent* defender, HexGame* game) {
     defender->getAgent()->setHP(defender->getAgent()->getHP() - damage);
     qDebug() << Name << " attacks " << defender->getAgent()->getName() << " for " << damage << " damage.";
 
-    if (defender->getAgent()->getHP() <= 0) {
+    bool defenderDied = (defender->getAgent()->getHP() <= 0);
+    DraggableAgent* defenderToDelete = nullptr;
+    if (defenderDied) {
         qDebug() << defender->getAgent()->getName() << " is defeated!";
         game->getScene()->removeItem(defender);
         if (defender->getPlayer() == '1') {
@@ -30,10 +31,28 @@ void Agent::attack(DraggableAgent* defender, HexGame* game) {
                 std::remove(game->getRightHexagons().begin(), game->getRightHexagons().end(), defender),
                 game->getRightHexagons().end());
         }
-        delete defender;
+        defenderToDelete = defender;
         defender = nullptr;
     }
 
+    DraggableAgent* attacker = nullptr;
+    for (auto* da : game->getLeftHexagons()) {
+        if (da->getAgent() == this) {
+            attacker = da;
+            break;
+        }
+    }
+    if (!attacker) {
+        for (auto* da : game->getRightHexagons()) {
+            if (da->getAgent() == this) {
+                attacker = da;
+                break;
+            }
+        }
+    }
+
+    bool attackerDied = false;
+    DraggableAgent* attackerToDelete = nullptr;
     if (defender) {
         int counterDamage = defender->getAgent()->getDamage() / 2;
         setHP(Hp - counterDamage);
@@ -41,21 +60,6 @@ void Agent::attack(DraggableAgent* defender, HexGame* game) {
 
         if (Hp <= 0) {
             qDebug() << Name << " is defeated!";
-            DraggableAgent* attacker = nullptr;
-            for (auto* da : game->getLeftHexagons()) {
-                if (da->getAgent() == this) {
-                    attacker = da;
-                    break;
-                }
-            }
-            if (!attacker) {
-                for (auto* da : game->getRightHexagons()) {
-                    if (da->getAgent() == this) {
-                        attacker = da;
-                        break;
-                    }
-                }
-            }
             if (attacker) {
                 game->getScene()->removeItem(attacker);
                 if (attacker->getPlayer() == '1') {
@@ -67,16 +71,13 @@ void Agent::attack(DraggableAgent* defender, HexGame* game) {
                         std::remove(game->getRightHexagons().begin(), game->getRightHexagons().end(), attacker),
                         game->getRightHexagons().end());
                 }
-                delete attacker;
+                attackerToDelete = attacker;
             }
-            game->clearHighlight();
-            game->setCurrentHighlightedAgent(nullptr);
-            game->drawBoard();
-            return;
+            attackerDied = true;
         }
     }
 
-    if (defender) {
+    if (defender && !attackerDied) {
         Hexagon* defPos = defender->getAgent()->getPosition();
         std::vector<Hexagon*> freeNeighbors;
         for (int i = 0; i < 6; ++i) {
@@ -93,7 +94,6 @@ void Agent::attack(DraggableAgent* defender, HexGame* game) {
                 } else if (type == AgentType::Floating) {
                     if (val == "#") valid = false;
                 } else if (type == AgentType::Flying) {
-
                 }
 
                 bool occupied = false;
@@ -138,21 +138,6 @@ void Agent::attack(DraggableAgent* defender, HexGame* game) {
                 int randIndex = dis(gen);
                 Hexagon* newPos = validNeighbors[randIndex];
 
-                DraggableAgent* attacker = nullptr;
-                for (auto* da : game->getLeftHexagons()) {
-                    if (da->getAgent() == this) {
-                        attacker = da;
-                        break;
-                    }
-                }
-                if (!attacker) {
-                    for (auto* da : game->getRightHexagons()) {
-                        if (da->getAgent() == this) {
-                            attacker = da;
-                            break;
-                        }
-                    }
-                }
                 if (attacker) {
                     attacker->setPos(newPos->getCenter() - attacker->boundingRect().center());
                     attacker->setOriginalPos(newPos->getCenter());
@@ -166,6 +151,7 @@ void Agent::attack(DraggableAgent* defender, HexGame* game) {
             qDebug() << "No valid free neighbors for " << Name << " to move to.";
         }
     }
+
     if (game->countAgentsOnBoard('1') == 0) {
         qDebug() << "Player 2 wins!";
         QMessageBox::information(game, "Game Over", "Player 2 wins! All Player 1 agents on board are defeated.");
@@ -176,7 +162,16 @@ void Agent::attack(DraggableAgent* defender, HexGame* game) {
         game->close();
     }
 
+    game->clearHighlight();
+    game->setCurrentHighlightedAgent(nullptr);
     game->drawBoard();
+
+    if (defenderToDelete) {
+        delete defenderToDelete;
+    }
+    if (attackerToDelete) {
+        delete attackerToDelete;
+    }
 }
 
 WaterWalking::WaterWalking(const QString& name, int hp, int mobility, int damage, int attackRange)

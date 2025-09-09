@@ -12,6 +12,7 @@ debug/pagename.o
 debug/qrc_Agent.o
 debug/qrc_Agentboard.o
 debug/qrc_bp.o
+debug/qrc_music.o
 debug/qrc_page.o
 debug/qrc_page1.o
 debug/qrc_pageGallery.o
