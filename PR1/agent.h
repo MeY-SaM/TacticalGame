@@ -50,6 +50,7 @@ protected:
     int Damage;
     int AttackRange;
     Hexagon* hexagon_;
+
 };
 
 class WaterWalking : public Agent {

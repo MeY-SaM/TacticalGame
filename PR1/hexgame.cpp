@@ -593,6 +593,7 @@ std::pair<std::vector<Hexagon*>, std::vector<DraggableAgent*>> HexGame::bfs(Hexa
             } else if (type == AgentType::Grounded) {
                 if (cellValue == "~" || cellValue == "#") isValidMove = isValidLanding = false;
             } else if (type == AgentType::Floating) {
+
             } else if (type == AgentType::Flying) {
                 if (cellValue == "#" || cellValue == "~") isValidLanding = false;
             }

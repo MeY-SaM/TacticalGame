@@ -92,8 +92,10 @@ void Agent::attack(DraggableAgent* defender, HexGame* game) {
                 } else if (type == AgentType::Grounded) {
                     if (val == "~" || val == "#") valid = false;
                 } else if (type == AgentType::Floating) {
-                    if (val == "#") valid = false;
+
                 } else if (type == AgentType::Flying) {
+                    if (val == "#" || val == "~") valid = false;
+
                 }
 
                 bool occupied = false;
@@ -108,49 +110,28 @@ void Agent::attack(DraggableAgent* defender, HexGame* game) {
             }
         }
 
+
+
         if (!freeNeighbors.empty()) {
-            std::vector<Hexagon*> validNeighbors;
-            AgentType type = getAgentType();
+            std::random_device rd;
+            std::mt19937 gen(rd());
+            std::uniform_int_distribution<> dis(0, freeNeighbors.size() - 1);
+            int randIndex = dis(gen);
+            Hexagon* newPos = freeNeighbors[randIndex];
 
-            for (Hexagon* neigh : freeNeighbors) {
-                QString val = neigh->getValue();
-                bool valid = true;
-
-                if (type == AgentType::WaterWalking) {
-                    if (val == "#") valid = false;
-                } else if (type == AgentType::Grounded) {
-                    if (val == "~" || val == "#") valid = false;
-                } else if (type == AgentType::Floating) {
-
-                } else if (type == AgentType::Flying) {
-                    if (val == "#" || val == "~") valid = false;
-                }
-
-                if (valid) {
-                    validNeighbors.push_back(neigh);
-                }
-            }
-
-            if (!validNeighbors.empty()) {
-                std::random_device rd;
-                std::mt19937 gen(rd());
-                std::uniform_int_distribution<> dis(0, validNeighbors.size() - 1);
-                int randIndex = dis(gen);
-                Hexagon* newPos = validNeighbors[randIndex];
-
-                if (attacker) {
-                    attacker->setPos(newPos->getCenter() - attacker->boundingRect().center());
-                    attacker->setOriginalPos(newPos->getCenter());
-                    attacker->getAgent()->setPosition(newPos);
-                    qDebug() << Name << " moved to a random valid neighbor of " << defender->getAgent()->getName();
-                }
-            } else {
-                qDebug() << "No valid free neighbors for " << Name << " to move to.";
+            if (attacker) {
+                attacker->setPos(newPos->getCenter() - attacker->boundingRect().center());
+                attacker->setOriginalPos(newPos->getCenter());
+                attacker->getAgent()->setPosition(newPos);
+                qDebug() << Name << " moved to a random valid neighbor of " << defender->getAgent()->getName();
             }
         } else {
             qDebug() << "No valid free neighbors for " << Name << " to move to.";
         }
+    } else {
+        qDebug() << "No valid free neighbors for " << Name << " to move to.";
     }
+
 
     if (game->countAgentsOnBoard('1') == 0) {
         qDebug() << "Player 2 wins!";
